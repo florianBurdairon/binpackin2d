@@ -23,6 +23,12 @@ public class Item {
         return height;
     }
 
+    public void rotate() {
+        int temp = width;
+        width = height;
+        height = temp;
+    }
+
     public String toString() {
         return id + " " + width + " " + height;
     }
