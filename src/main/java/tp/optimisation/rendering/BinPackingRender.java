@@ -6,8 +6,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.StrokeType;
 import javafx.stage.Stage;
 import tp.optimisation.Bin;
 import tp.optimisation.BinPacking;
@@ -46,19 +44,6 @@ public class BinPackingRender extends Application {
 
         primaryStage.setScene(scene);
         primaryStage.show();
-    }
-
-    private Rectangle createBinRenderer(){
-        Rectangle rectangle = new Rectangle();
-        rectangle.setX(20);
-        rectangle.setY(20);
-        rectangle.setWidth(560);
-        rectangle.setHeight(560);
-        rectangle.setFill(Color.WHITE);
-        rectangle.setStroke(Color.GREY);
-        rectangle.setStrokeWidth(5.0);
-        rectangle.setStrokeType(StrokeType.OUTSIDE);
-        return rectangle;
     }
 
     private void renderBin(GraphicsContext gc, Bin bin) {
