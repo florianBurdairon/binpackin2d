@@ -49,6 +49,7 @@ public class Dataset {
     }
 
     public static Dataset fromString(String s){
+        s = s.replace("\r", "");
         String[] lines = s.split("\n");
         String name = lines[0].split(": ")[1];
         String comment = lines[1].split(": ")[1];

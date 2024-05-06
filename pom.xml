@@ -84,6 +84,7 @@
                 <configuration>
                     <mainClass>tp.optimisation.rendering.BinPackingRender</mainClass>
                 </configuration>
+                <version>0.0.8</version>
             </plugin>
         </plugins>
     </build>

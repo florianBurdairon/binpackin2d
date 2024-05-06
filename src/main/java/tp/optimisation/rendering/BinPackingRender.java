@@ -6,7 +6,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 import javafx.stage.Stage;
@@ -15,8 +14,6 @@ import tp.optimisation.BinPacking;
 import tp.optimisation.Dataset;
 import tp.optimisation.Item;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 public class BinPackingRender extends Application {
@@ -28,6 +25,7 @@ public class BinPackingRender extends Application {
     @Override
     public void start(Stage primaryStage) {
 
+        Dataset.fromFile("data/binpacking2d-01.bp2d");
         BinPacking bp = new BinPacking(Dataset.fromFile("data/binpacking2d-01.bp2d"));
         bp.addItemAtRandomPos();
 

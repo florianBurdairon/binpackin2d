@@ -59,7 +59,10 @@ public class DatasetTest {
         this.assertDatasetValues(dataset, datasetFileValues);
         this.assertDatasetItems(dataset, datasetFileItems);
         try {
-            assertEquals(new String(Files.readAllBytes(Paths.get(datasetFilename))), dataset.toString());
+            assertEquals(
+                    new String(Files.readAllBytes(Paths.get(datasetFilename)))
+                            .replace("\r", ""),
+                    dataset.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
