@@ -1,27 +1,27 @@
 package tp.optimisation.utils;
 
-public class Position<T> {
-    private T x;
-    private T y;
+public class Position {
+    private int x;
+    private int y;
 
-    public Position(T x, T y) {
+    public Position(int x, int y) {
         this.x = x;
         this.y = y;
     }
 
-    public T getX() {
+    public int getX() {
         return x;
     }
 
-    public T getY() {
+    public int getY() {
         return y;
     }
 
-    public void setX(T x) {
+    public void setX(int x) {
         this.x = x;
     }
 
-    public void setY(T y) {
+    public void setY(int y) {
         this.y = y;
     }
 

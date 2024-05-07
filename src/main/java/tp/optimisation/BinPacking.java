@@ -14,6 +14,7 @@ public class BinPacking {
     public BinPacking(Dataset dataset) {
         this.dataset = dataset;
         this.bins = new ArrayList<>();
+        FFDH();
     }
 
     public Dataset getDataset() {
@@ -27,27 +28,26 @@ public class BinPacking {
     public void addItemAtRandomPos() {
         Bin bin = new Bin(dataset.getBinWidth(), dataset.getBinHeight());
         for (Item item : dataset.getItems()) {
-            bin.addItem(item, new Position<Double>(
-                    new Random().nextDouble(dataset.getBinWidth() - item.getWidth()),
-                    new Random().nextDouble(dataset.getBinHeight() - item.getHeight())));
+            bin.addItem(item, new Position(
+                    new Random().nextInt(dataset.getBinWidth() - item.getWidth()),
+                    new Random().nextInt(dataset.getBinHeight() - item.getHeight())));
         }
         bins.add(bin);
     }
 
     public void FFDH() {
         // Use First Fit Decreasing Height algorithm to pack items from dataset into bins
-        // Sort items by decreasing height
+        // Sort items by decreasing width
         List<Item> items = new ArrayList<>(dataset.getItems());
-        items.sort(Comparator.comparing(Item::getHeight).reversed());
+        items.sort(Comparator.comparing(Item::getWidth).reversed());
 
         for (Item item : items) {
-            /*
             boolean placed = false;
 
             // Try to place the item in each bin
             for (Bin bin : bins) {
-                if (bin.canFit(item)) {
-                    bin.addItem(item);
+                if (bin.canFitHorizontally(item)) {
+                    bin.addItemHorizontally(item);
                     placed = true;
                     break;
                 }
@@ -56,9 +56,9 @@ public class BinPacking {
             // If the item couldn't be placed in any bin, open a new one
             if (!placed) {
                 Bin newBin = new Bin(dataset.getBinWidth(), dataset.getBinHeight());
-                newBin.addItem(item);
+                newBin.addItemHorizontally(item);
                 bins.add(newBin);
-            }*/
+            }
         }
     }
 }

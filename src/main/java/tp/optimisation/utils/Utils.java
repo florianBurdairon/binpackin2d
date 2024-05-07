@@ -13,14 +13,14 @@ public class Utils {
         return Math.ceilDiv(sumItemsArea, binArea);
     }
 
-    public static boolean isItemOverlapping(Item item1, Position<Integer> position1, Item item2, Position<Integer> position2) {
+    public static boolean isItemOverlapping(Item item1, Position position1, Item item2, Position position2) {
         // Get the highest item
         Item highestItem = position1.getY() > position2.getY() ? item1 : item2;
-        Position<Integer> highestPosition = position1.getY() > position2.getY() ? position1 : position2;
+        Position highestPosition = position1.getY() > position2.getY() ? position1 : position2;
 
         // Get the lowest item
         Item lowestItem = position1.getY() > position2.getY() ? item2 : item1;
-        Position<Integer> lowestPosition = position1.getY() > position2.getY() ? position2 : position1;
+        Position lowestPosition = position1.getY() > position2.getY() ? position2 : position1;
 
         // Check if the highest item is overlapping the lowest item
         // Check if the items intersect on the y-axis

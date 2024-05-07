@@ -1,6 +1,5 @@
 package tp.optimisation.rendering;
 
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -105,10 +104,8 @@ public class MoleculeRenderer extends ObjectRenderer {
         world.getChildren().addAll(moleculeGroup);
     }
 
-    public void render(Group parent)
-    {
+    @Override
+    void buildObject() {
         buildMolecule();
-
-        super.render(parent);
     }
 }

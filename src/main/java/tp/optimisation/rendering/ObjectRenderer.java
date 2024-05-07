@@ -9,8 +9,11 @@ public abstract class ObjectRenderer extends Group {
     protected void addKeyboardEvents(Scene scene) {}
     protected void addMouseEvents(Scene scene) {}
 
-    public void render(Group parent)
+    abstract void buildObject();
+
+    public void renderInto(Group parent)
     {
+        buildObject();
         parent.getChildren().add(world);
     }
 

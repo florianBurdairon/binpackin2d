@@ -9,6 +9,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.stage.Stage;
+import tp.optimisation.Bin;
+import tp.optimisation.BinPacking;
+import tp.optimisation.Dataset;
 
 public class SceneRenderer extends Application {
 
@@ -21,17 +24,17 @@ public class SceneRenderer extends Application {
     final XForm cameraXform2 = new XForm();
     final XForm cameraXform3 = new XForm();
 
-    private static final double CAMERA_INITIAL_DISTANCE = -450;
-    private static final double CAMERA_INITIAL_X_ANGLE = 70.0;
-    private static final double CAMERA_INITIAL_Y_ANGLE = 320.0;
+    private static final double CAMERA_INITIAL_DISTANCE = -900;
+    private static final double CAMERA_INITIAL_X_ANGLE = 45.0;
+    private static final double CAMERA_INITIAL_Y_ANGLE = 180.0;
     private static final double CAMERA_NEAR_CLIP = 0.1;
     private static final double CAMERA_FAR_CLIP = 10000.0;
     private static final double AXIS_LENGTH = 250.0;
-    private static final double CONTROL_MULTIPLIER = 0.1;
+    private static final double CONTROL_MULTIPLIER = 1;
     private static final double SHIFT_MULTIPLIER = 10.0;
     private static final double MOUSE_SPEED = 0.1;
     private static final double ROTATION_SPEED = 2.0;
-    private static final double TRACK_SPEED = 0.3;
+    private static final double TRACK_SPEED = 3;
 
     double mousePosX;
     double mousePosY;
@@ -46,22 +49,26 @@ public class SceneRenderer extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+
+        BinPacking bp = new BinPacking(Dataset.fromFile("data/binpacking2d-01.bp2d"));
+        Bin bin = bp.getBins().getFirst();
+
         root.getChildren().add(world);
         root.setDepthTest(DepthTest.ENABLE);
 
         // buildScene();
         buildCamera();
         buildAxes();
-        ObjectRenderer binPacking = new MoleculeRenderer();
-        binPacking.render(world);
+        ObjectRenderer binRenderer = new BinRenderer(bin);
+        binRenderer.renderInto(world);
 
         Scene scene = new Scene(root, 1024, 768, true);
         scene.setFill(Color.GREY);
         handleKeyboard(scene);
         handleMouse(scene);
-        binPacking.registerEvents(scene);
+        binRenderer.registerEvents(scene);
 
-        primaryStage.setTitle("Molecule Sample Application");
+        primaryStage.setTitle("Sample Application");
         primaryStage.setScene(scene);
         primaryStage.show();
 

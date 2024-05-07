@@ -26,9 +26,25 @@ public class Bin {
         items.put(item, position);
     }
 
+    public void addItemHorizontally(Item item) {
+        int widthAvailable = width;
+        for (Item i : items.keySet()) {
+            widthAvailable -= i.getWidth();
+        }
+        items.put(item, new Position(width - widthAvailable, 0));
+    }
+
     public boolean canFit(Item item, Position position) {
 
         return false;
+    }
+
+    public boolean canFitHorizontally(Item item) {
+        int widthAvailable = width;
+        for (Item i : items.keySet()) {
+            widthAvailable -= i.getWidth();
+        }
+        return item.getWidth() <= widthAvailable;
     }
 
     public int getWidth() {
