@@ -82,7 +82,7 @@
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>tp.optimisation.rendering.BinPackingRender</mainClass>
+                    <mainClass>tp.optimisation.rendering.SceneRenderer</mainClass>
                 </configuration>
                 <version>0.0.8</version>
             </plugin>
