@@ -2,11 +2,12 @@ package tp.optimisation.rendering;
 
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.CullFace;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.TriangleMesh;
 import tp.optimisation.Item;
 import tp.optimisation.utils.Position;
+
+import java.util.Random;
 
 public class ItemRenderer extends ObjectRenderer {
     private final Item item;
@@ -19,16 +20,17 @@ public class ItemRenderer extends ObjectRenderer {
 
     @Override
     void buildObject() {
+        Random r = new Random();
         final PhongMaterial material = new PhongMaterial();
-        material.setDiffuseColor(Color.BLUE);
-        material.setSpecularColor(Color.LIGHTBLUE);
+        material.setDiffuseColor(new Color(r.nextDouble(0, 1), r.nextDouble(0, 1), r.nextDouble(0, 1), 1));
+        //material.setSpecularColor(Color.LIGHTBLUE);
 
         TriangleMesh mesh = new TriangleMesh();
         mesh.getPoints().addAll(
-                0, 1, 0,
-                item.getWidth(), 1, 0,
-                0, 1, item.getHeight(),
-                item.getWidth(), 1, item.getHeight());
+                0, 5, 0,
+                item.getWidth(), 5, 0,
+                0, 5, item.getHeight(),
+                item.getWidth(), 5, item.getHeight());
         mesh.getTexCoords().addAll(
                 0.5f, 0.5f
         );
@@ -37,7 +39,6 @@ public class ItemRenderer extends ObjectRenderer {
                 3, 0, 1, 0, 2, 0
         );
         MeshView meshView = new MeshView(mesh);
-        meshView.setCullFace(CullFace.NONE);
         meshView.setMaterial(material);
         meshView.setTranslateX(position.getX());
         meshView.setTranslateY(position.getY());
