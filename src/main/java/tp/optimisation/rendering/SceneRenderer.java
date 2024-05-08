@@ -9,10 +9,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.stage.Stage;
-import tp.optimisation.Bin;
 import tp.optimisation.BinPacking;
 import tp.optimisation.Dataset;
-import tp.optimisation.utils.Position;
 
 public class SceneRenderer extends Application {
 
@@ -63,13 +61,9 @@ public class SceneRenderer extends Application {
         handleMouse(scene);
 
         BinPacking bp = new BinPacking(Dataset.fromFile("data/binpacking2d-01.bp2d"));
-        int i = 0;
-        for (Bin b : bp.getBins()) {
-            ObjectRenderer binRenderer = new BinRenderer(b, new Position((b.getWidth() + 10) * i, 0));
-            binRenderer.renderInto(world);
-            binRenderer.registerEvents(scene);
-            i++;
-        }
+        BinPackingRenderer bpRenderer = new BinPackingRenderer(bp);
+        bpRenderer.renderInto(world);
+        bpRenderer.registerEvents(scene);
 
         primaryStage.setTitle("Sample Application");
         primaryStage.setScene(scene);

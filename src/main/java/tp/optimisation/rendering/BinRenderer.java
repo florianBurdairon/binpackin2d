@@ -14,10 +14,14 @@ public class BinRenderer extends ObjectRenderer {
     private final Bin bin;
     private final XForm binGroup = new XForm();
     private final Position position;
+    private final double desiredWidth;
+    private final double desiredHeight;
 
-    public BinRenderer(Bin bin, Position position) {
+    public BinRenderer(Bin bin, Position position, double desiredWidth, double desiredHeight) {
         this.bin = bin;
         this.position = position;
+        this.desiredWidth = desiredWidth;
+        this.desiredHeight = desiredHeight;
     }
 
     @Override
