@@ -43,23 +43,23 @@ public class MoleculeRenderer extends ObjectRenderer {
         greyMaterial.setSpecularColor(Color.GREY);
 
         // Molecule Hierarchy
-        // [*] moleculeXform
-        //     [*] oxygenXform
+        // [*] moleculeXForm
+        //     [*] oxygenXForm
         //         [*] oxygenSphere
-        //     [*] hydrogen1SideXform
-        //         [*] hydrogen1Xform
+        //     [*] hydrogen1SideXForm
+        //         [*] hydrogen1XForm
         //             [*] hydrogen1Sphere
         //         [*] bond1Cylinder
-        //     [*] hydrogen2SideXform
-        //         [*] hydrogen2Xform
+        //     [*] hydrogen2SideXForm
+        //         [*] hydrogen2XForm
         //             [*] hydrogen2Sphere
         //         [*] bond2Cylinder
-        XForm moleculeXform = new XForm();
-        XForm oxygenXform = new XForm();
-        XForm hydrogen1SideXform = new XForm();
-        XForm hydrogen1Xform = new XForm();
-        XForm hydrogen2SideXform = new XForm();
-        XForm hydrogen2Xform = new XForm();
+        XForm moleculeXForm = new XForm();
+        XForm oxygenXForm = new XForm();
+        XForm hydrogen1SideXForm = new XForm();
+        XForm hydrogen1XForm = new XForm();
+        XForm hydrogen2SideXForm = new XForm();
+        XForm hydrogen2XForm = new XForm();
 
         Sphere oxygenSphere = new Sphere(40.0);
         oxygenSphere.setMaterial(redMaterial);
@@ -84,22 +84,22 @@ public class MoleculeRenderer extends ObjectRenderer {
         bond2Cylinder.setRotationAxis(Rotate.Z_AXIS);
         bond2Cylinder.setRotate(90.0);
 
-        moleculeXform.getChildren().add(oxygenXform);
-        moleculeXform.getChildren().add(hydrogen1SideXform);
-        moleculeXform.getChildren().add(hydrogen2SideXform);
-        oxygenXform.getChildren().add(oxygenSphere);
-        hydrogen1SideXform.getChildren().add(hydrogen1Xform);
-        hydrogen2SideXform.getChildren().add(hydrogen2Xform);
-        hydrogen1Xform.getChildren().add(hydrogen1Sphere);
-        hydrogen2Xform.getChildren().add(hydrogen2Sphere);
-        hydrogen1SideXform.getChildren().add(bond1Cylinder);
-        hydrogen2SideXform.getChildren().add(bond2Cylinder);
+        moleculeXForm.getChildren().add(oxygenXForm);
+        moleculeXForm.getChildren().add(hydrogen1SideXForm);
+        moleculeXForm.getChildren().add(hydrogen2SideXForm);
+        oxygenXForm.getChildren().add(oxygenSphere);
+        hydrogen1SideXForm.getChildren().add(hydrogen1XForm);
+        hydrogen2SideXForm.getChildren().add(hydrogen2XForm);
+        hydrogen1XForm.getChildren().add(hydrogen1Sphere);
+        hydrogen2XForm.getChildren().add(hydrogen2Sphere);
+        hydrogen1SideXForm.getChildren().add(bond1Cylinder);
+        hydrogen2SideXForm.getChildren().add(bond2Cylinder);
 
-        hydrogen1Xform.setTx(100.0);
-        hydrogen2Xform.setTx(100.0);
-        hydrogen2SideXform.setRotateY(HYDROGEN_ANGLE);
+        hydrogen1XForm.setTx(100.0);
+        hydrogen2XForm.setTx(100.0);
+        hydrogen2SideXForm.setRotateY(HYDROGEN_ANGLE);
 
-        moleculeGroup.getChildren().add(moleculeXform);
+        moleculeGroup.getChildren().add(moleculeXForm);
 
         world.getChildren().addAll(moleculeGroup);
     }

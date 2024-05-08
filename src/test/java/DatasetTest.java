@@ -5,6 +5,7 @@ import tp.optimisation.Item;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -84,5 +85,17 @@ public class DatasetTest {
             assertEquals(expectedItems[i].getWidth(), items.get(i).getWidth());
             assertEquals(expectedItems[i].getHeight(), items.get(i).getHeight());
         }
+    }
+
+    @Test
+    public void testSetItems() {
+        Dataset dataset = new Dataset("Test dataset", "No item at first", 0, 20, 20);
+        List<Item> items = new ArrayList<>();
+        items.add(new Item(1, 167, 184));
+        items.add(new Item(2, 114, 118));
+
+        assertEquals(dataset.getItems().size(), 0);
+        dataset.setItems(items);
+        assertDatasetItems(dataset, items.toArray(new Item[0]));
     }
 }

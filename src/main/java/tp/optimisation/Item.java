@@ -29,7 +29,15 @@ public class Item {
         height = temp;
     }
 
+    public Item asRotated() {
+        return new Item(id, height, width);
+    }
+
     public String toString() {
         return id + " " + width + " " + height;
+    }
+
+    public boolean equals(Item i){
+        return this.id == i.id && this.width == i.width && this.height == i.height;
     }
 }

@@ -170,7 +170,7 @@ public class XForm extends Group {
     }
 
     @Override public String toString() {
-        return "Xform[t = (" +
+        return "XForm[t = (" +
                            t.getX() + ", " +
                            t.getY() + ", " +
                            t.getZ() + ")  " +

@@ -21,9 +21,9 @@ public class SceneRenderer extends Application {
     final XForm world = new XForm();
 
     final PerspectiveCamera camera = new PerspectiveCamera(true);
-    final XForm cameraXform = new XForm();
-    final XForm cameraXform2 = new XForm();
-    final XForm cameraXform3 = new XForm();
+    final XForm cameraXForm = new XForm();
+    final XForm cameraXForm2 = new XForm();
+    final XForm cameraXForm3 = new XForm();
 
     private static final double CAMERA_INITIAL_DISTANCE = -900;
     private static final double CAMERA_INITIAL_X_ANGLE = 45.0;
@@ -80,17 +80,17 @@ public class SceneRenderer extends Application {
 
     private void buildCamera() {
         System.out.println("buildCamera()");
-        root.getChildren().add(cameraXform);
-        cameraXform.getChildren().add(cameraXform2);
-        cameraXform2.getChildren().add(cameraXform3);
-        cameraXform3.getChildren().add(camera);
-        cameraXform3.setRotateZ(180.0);
+        root.getChildren().add(cameraXForm);
+        cameraXForm.getChildren().add(cameraXForm2);
+        cameraXForm2.getChildren().add(cameraXForm3);
+        cameraXForm3.getChildren().add(camera);
+        cameraXForm3.setRotateZ(180.0);
 
         camera.setNearClip(CAMERA_NEAR_CLIP);
         camera.setFarClip(CAMERA_FAR_CLIP);
         camera.setTranslateZ(CAMERA_INITIAL_DISTANCE);
-        cameraXform.ry.setAngle(CAMERA_INITIAL_Y_ANGLE);
-        cameraXform.rx.setAngle(CAMERA_INITIAL_X_ANGLE);
+        cameraXForm.ry.setAngle(CAMERA_INITIAL_Y_ANGLE);
+        cameraXForm.rx.setAngle(CAMERA_INITIAL_X_ANGLE);
     }
 
 
@@ -145,8 +145,8 @@ public class SceneRenderer extends Application {
                 modifier = SHIFT_MULTIPLIER;
             }
             if (me.isPrimaryButtonDown()) {
-                cameraXform.ry.setAngle(cameraXform.ry.getAngle() - mouseDeltaX*MOUSE_SPEED*modifier*ROTATION_SPEED);
-                cameraXform.rx.setAngle(cameraXform.rx.getAngle() + mouseDeltaY*MOUSE_SPEED*modifier*ROTATION_SPEED);
+                cameraXForm.ry.setAngle(cameraXForm.ry.getAngle() - mouseDeltaX*MOUSE_SPEED*modifier*ROTATION_SPEED);
+                cameraXForm.rx.setAngle(cameraXForm.rx.getAngle() + mouseDeltaY*MOUSE_SPEED*modifier*ROTATION_SPEED);
             }
             else if (me.isSecondaryButtonDown()) {
                 double z = camera.getTranslateZ();
@@ -154,8 +154,8 @@ public class SceneRenderer extends Application {
                 camera.setTranslateZ(newZ);
             }
             else if (me.isMiddleButtonDown()) {
-                cameraXform2.t.setX(cameraXform2.t.getX() + mouseDeltaX*MOUSE_SPEED*modifier*TRACK_SPEED);
-                cameraXform2.t.setY(cameraXform2.t.getY() + mouseDeltaY*MOUSE_SPEED*modifier*TRACK_SPEED);
+                cameraXForm2.t.setX(cameraXForm2.t.getX() + mouseDeltaX*MOUSE_SPEED*modifier*TRACK_SPEED);
+                cameraXForm2.t.setY(cameraXForm2.t.getY() + mouseDeltaY*MOUSE_SPEED*modifier*TRACK_SPEED);
             }
         });
     }
@@ -164,11 +164,11 @@ public class SceneRenderer extends Application {
         scene.setOnKeyPressed(event -> {
             switch (event.getCode()) {
                 case Z:
-                    cameraXform2.t.setX(0.0);
-                    cameraXform2.t.setY(0.0);
+                    cameraXForm2.t.setX(0.0);
+                    cameraXForm2.t.setY(0.0);
                     camera.setTranslateZ(CAMERA_INITIAL_DISTANCE);
-                    cameraXform.ry.setAngle(CAMERA_INITIAL_Y_ANGLE);
-                    cameraXform.rx.setAngle(CAMERA_INITIAL_X_ANGLE);
+                    cameraXForm.ry.setAngle(CAMERA_INITIAL_Y_ANGLE);
+                    cameraXForm.rx.setAngle(CAMERA_INITIAL_X_ANGLE);
                     break;
                 case X:
                     axisGroup.setVisible(!axisGroup.isVisible());

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Dataset {
     private final String name;
@@ -46,6 +47,11 @@ public class Dataset {
 
     public String getComment() {
         return comment;
+    }
+
+    public void setItems(List<Item> items) {
+        this.items.clear();
+        this.items.addAll(items);
     }
 
     public static Dataset fromString(String s){

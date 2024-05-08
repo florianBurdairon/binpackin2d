@@ -1,11 +1,9 @@
 package tp.optimisation;
 
-import tp.optimisation.utils.Position;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Random;
 
 public class BinPacking {
     private final Dataset dataset;
@@ -23,16 +21,6 @@ public class BinPacking {
 
     public List<Bin> getBins() {
         return bins;
-    }
-
-    public void addItemAtRandomPos() {
-        Bin bin = new Bin(dataset.getBinWidth(), dataset.getBinHeight());
-        for (Item item : dataset.getItems()) {
-            bin.addItem(item, new Position(
-                    new Random().nextInt(dataset.getBinWidth() - item.getWidth()),
-                    new Random().nextInt(dataset.getBinHeight() - item.getHeight())));
-        }
-        bins.add(bin);
     }
 
     public void FFDH() {
