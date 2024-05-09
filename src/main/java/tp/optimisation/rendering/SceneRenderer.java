@@ -1,10 +1,7 @@
 package tp.optimisation.rendering;
 
 import javafx.application.Application;
-import javafx.scene.DepthTest;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.Scene;
+import javafx.scene.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
@@ -16,6 +13,7 @@ public class SceneRenderer extends Application {
 
     final Group root = new Group();
     final XForm axisGroup = new XForm();
+    final XForm lightGroup = new XForm();
     final XForm world = new XForm();
 
     final PerspectiveCamera camera = new PerspectiveCamera(true);
@@ -24,16 +22,17 @@ public class SceneRenderer extends Application {
     final XForm cameraXForm3 = new XForm();
 
     private static final double CAMERA_INITIAL_DISTANCE = -900;
-    private static final double CAMERA_INITIAL_X_ANGLE = 45.0;
-    private static final double CAMERA_INITIAL_Y_ANGLE = 180.0;
+    private static final double CAMERA_INITIAL_X_ANGLE = 35.0;
+    private static final double CAMERA_INITIAL_Y_ANGLE = 135.0;
     private static final double CAMERA_NEAR_CLIP = 0.1;
     private static final double CAMERA_FAR_CLIP = 10000.0;
     private static final double AXIS_LENGTH = 250.0;
-    private static final double CONTROL_MULTIPLIER = 1;
-    private static final double SHIFT_MULTIPLIER = 10.0;
-    private static final double MOUSE_SPEED = 0.1;
-    private static final double ROTATION_SPEED = 2.0;
+    private static final double CONTROL_MULTIPLIER = 0.75;
+    private static final double SHIFT_MULTIPLIER = 5.0;
+    private static final double MOUSE_SPEED = 0.2;
+    private static final double ROTATION_SPEED = 1.5;
     private static final double TRACK_SPEED = 3;
+    private static final double SCROLL_SPEED = 2;
 
     double mousePosX;
     double mousePosY;
@@ -54,13 +53,14 @@ public class SceneRenderer extends Application {
         // buildScene();
         buildCamera();
         buildAxes();
+        buildLight();
 
         Scene scene = new Scene(root, 1024, 768, true);
         scene.setFill(Color.GREY);
         handleKeyboard(scene);
         handleMouse(scene);
 
-        BinPacking bp = new BinPacking(Dataset.fromFile("data/binpacking2d-01.bp2d"));
+        BinPacking bp = new BinPacking(Dataset.fromFile("data/binpacking2d-02.bp2d"));
         BinPackingRenderer bpRenderer = new BinPackingRenderer(bp);
         bpRenderer.renderInto(world);
         bpRenderer.registerEvents(scene);
@@ -115,6 +115,19 @@ public class SceneRenderer extends Application {
         world.getChildren().addAll(axisGroup);
     }
 
+    private void buildLight() {
+        System.out.println("buildLight()");
+        PointLight pointLight = new PointLight();
+        pointLight.setColor(Color.WHITE);
+        pointLight.setConstantAttenuation(3);
+
+        AmbientLight ambientLight = new AmbientLight(Color.WHITE);
+
+        lightGroup.getChildren().addAll(ambientLight, pointLight);
+        lightGroup.setTranslate(500, 1000, 300);
+        world.getChildren().addAll(lightGroup);
+    }
+
     private void handleMouse(Scene scene) {
         scene.setOnMousePressed(me -> {
             mousePosX = me.getSceneX();
@@ -122,6 +135,7 @@ public class SceneRenderer extends Application {
             mouseOldX = me.getSceneX();
             mouseOldY = me.getSceneY();
         });
+        scene.setOnScroll(se -> camera.setTranslateZ(camera.getTranslateZ() + se.getDeltaY()*SCROLL_SPEED));
         scene.setOnMouseDragged(me -> {
             mouseOldX = mousePosX;
             mouseOldY = mousePosY;
@@ -142,12 +156,7 @@ public class SceneRenderer extends Application {
                 cameraXForm.ry.setAngle(cameraXForm.ry.getAngle() - mouseDeltaX*MOUSE_SPEED*modifier*ROTATION_SPEED);
                 cameraXForm.rx.setAngle(cameraXForm.rx.getAngle() + mouseDeltaY*MOUSE_SPEED*modifier*ROTATION_SPEED);
             }
-            else if (me.isSecondaryButtonDown()) {
-                double z = camera.getTranslateZ();
-                double newZ = z + mouseDeltaX*MOUSE_SPEED*modifier;
-                camera.setTranslateZ(newZ);
-            }
-            else if (me.isMiddleButtonDown()) {
+            else if (me.isSecondaryButtonDown() || me.isMiddleButtonDown()) {
                 cameraXForm2.t.setX(cameraXForm2.t.getX() + mouseDeltaX*MOUSE_SPEED*modifier*TRACK_SPEED);
                 cameraXForm2.t.setY(cameraXForm2.t.getY() + mouseDeltaY*MOUSE_SPEED*modifier*TRACK_SPEED);
             }
