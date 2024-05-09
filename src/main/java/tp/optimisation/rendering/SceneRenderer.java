@@ -1,7 +1,11 @@
 package tp.optimisation.rendering;
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
 import javafx.scene.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
@@ -10,6 +14,10 @@ import tp.optimisation.BinPacking;
 import tp.optimisation.Dataset;
 
 public class SceneRenderer extends Application {
+
+    private String datasetFile;
+    private BinPacking bp;
+    private BinPackingRenderer bpRenderer;
 
     final Group root = new Group();
     final XForm axisGroup = new XForm();
@@ -48,28 +56,66 @@ public class SceneRenderer extends Application {
     @Override
     public void start(Stage primaryStage) {
         root.getChildren().add(world);
-        root.setDepthTest(DepthTest.ENABLE);
+        world.setDepthTest(DepthTest.ENABLE);
 
         // buildScene();
         buildCamera();
         buildAxes();
         buildLight();
 
-        Scene scene = new Scene(root, 1024, 768, true);
-        scene.setFill(Color.GREY);
+        SubScene subScene = new SubScene(root, 800, 800, true, SceneAntialiasing.BALANCED);
+        subScene.setFill(Color.GREY);
+        subScene.setCamera(camera);
+
+        BorderPane pane = new BorderPane();
+        Scene scene = new Scene(pane, 1000, 800);
+
+        pane.setCenter(subScene);
+        BorderPane rightPane = new BorderPane();
+        rightPane.setPrefSize(200, 800);
+
+        ChoiceBox<String> datasets = new ChoiceBox<>(FXCollections.observableArrayList(
+                "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13"
+        ));
+        datasets.setValue("01");
+        datasets.setPrefSize(150, 30);
+        datasets.setOnAction(e -> {
+            changeDataset(datasets.getValue());
+        });
+        changeDataset(datasets.getValue());
+        rightPane.setTop(datasets);
+
+        Button readDatasetButton = new Button("Read dataset");
+        readDatasetButton.setOnAction(e -> {
+            world.getChildren().clear();
+            bp = new BinPacking(Dataset.fromFile(datasetFile));
+            bpRenderer = new BinPackingRenderer(bp);
+            bpRenderer.renderInto(world);
+            bpRenderer.registerEvents(scene);
+        });
+        readDatasetButton.setPrefSize(150, 50);
+        rightPane.setCenter(readDatasetButton);
+
+        Button nextIterationButton = new Button("Next iteration");
+        nextIterationButton.setOnAction(e -> {
+            bp.getNextIteration();
+            bpRenderer.addNextRow();
+        });
+        nextIterationButton.setPrefSize(150, 50);
+        rightPane.setBottom(nextIterationButton);
+
+        pane.setRight(rightPane);
+
         handleKeyboard(scene);
         handleMouse(scene);
 
-        BinPacking bp = new BinPacking(Dataset.fromFile("data/binpacking2d-02.bp2d"));
-        BinPackingRenderer bpRenderer = new BinPackingRenderer(bp);
-        bpRenderer.renderInto(world);
-        bpRenderer.registerEvents(scene);
-
-        primaryStage.setTitle("Sample Application");
+        primaryStage.setTitle("Bin Packing 2D");
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
 
-        scene.setCamera(camera);
+    private void changeDataset(String value) {
+        datasetFile = "data/binpacking2d-" + value + ".bp2d";
     }
 
     private void buildCamera() {
@@ -112,7 +158,7 @@ public class SceneRenderer extends Application {
 
         axisGroup.getChildren().addAll(xAxis, yAxis, zAxis);
         axisGroup.setVisible(false);
-        world.getChildren().addAll(axisGroup);
+        root.getChildren().addAll(axisGroup);
     }
 
     private void buildLight() {
@@ -125,7 +171,7 @@ public class SceneRenderer extends Application {
 
         lightGroup.getChildren().addAll(ambientLight, pointLight);
         lightGroup.setTranslate(500, 1000, 300);
-        world.getChildren().addAll(lightGroup);
+        root.getChildren().addAll(lightGroup);
     }
 
     private void handleMouse(Scene scene) {

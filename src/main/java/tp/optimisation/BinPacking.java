@@ -1,22 +1,22 @@
 package tp.optimisation;
 
 
+import tp.optimisation.metaheuristics.HillClimbingMetaheuristic;
+import tp.optimisation.metaheuristics.Metaheuristic;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 public class BinPacking {
     private final Dataset dataset;
-    private final List<Bin> bins;
+    private List<Bin> bins;
+    private Metaheuristic metaheuristic;
 
     public BinPacking(Dataset dataset) {
         this.dataset = dataset;
-        this.bins = new ArrayList<>();
-        FFDH();
-    }
-
-    public Dataset getDataset() {
-        return dataset;
+        this.metaheuristic = new HillClimbingMetaheuristic();
+        reset();
     }
 
     public List<Bin> getBins() {
@@ -48,5 +48,21 @@ public class BinPacking {
                 bins.add(newBin);
             }
         }
+    }
+
+    public void setMetaheuristic(Metaheuristic metaheuristic) {
+        this.metaheuristic = metaheuristic;
+        reset();
+    }
+
+    public void reset() {
+        // Reset the bins to their initial state
+        bins = new ArrayList<>();
+        FFDH();
+    }
+
+    public void getNextIteration() {
+        // Get the next bin iteration using the metaheuristic
+        bins = metaheuristic.getNextIteration(bins);
     }
 }

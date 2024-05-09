@@ -2,6 +2,8 @@ package tp.optimisation;
 
 import tp.optimisation.utils.Guillotine;
 import tp.optimisation.utils.Position;
+import tp.optimisation.utils.Rectangle;
+import tp.optimisation.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,16 +16,49 @@ public class Bin {
 
     private final Map<Item, Position> items;
     private final List<Guillotine> guillotines;
+    private final List<Rectangle> emptySpaces;
 
     public Bin(int width, int height) {
         this.width = width;
         this.height = height;
         this.items = new HashMap<>();
         this.guillotines = new ArrayList<>();
+        emptySpaces = new ArrayList<>();
     }
 
-    public void addItem(Item item, Position position) {
+    private void addItemAt(Item item, Position position) {
         items.put(item, position);
+        Guillotine g = new Guillotine(Guillotine.Direction.Vertical, position.getX() + item.width);
+
+        // Get the empty space where the item is placed and replace it by the new empty spaces
+        Rectangle itemRectangle = new Rectangle(position.getX(), position.getY(), item.width, item.height);
+        for (Rectangle r : emptySpaces) {
+            if (Utils.isItemOverlapping(r, itemRectangle)) {
+                emptySpaces.remove(r);
+                List<Rectangle> newRectangles = r.cutWithGuillotine(g);
+                for (Rectangle newRectangle : newRectangles) {
+                    if (Utils.isItemOverlapping(newRectangle, itemRectangle))
+                        newRectangle = new Rectangle(newRectangle.getX(), newRectangle.getY() + itemRectangle.getHeight(), newRectangle.getWidth(), newRectangle.getHeight() - itemRectangle.getHeight());
+                    emptySpaces.add(newRectangle);
+                }
+                break;
+            }
+        }
+
+        guillotines.add(g);
+    }
+
+    public boolean addItem(Item item) {
+        Position position = canFit(item);
+        if (position != null) {
+            addItemAt(item, position);
+            return true;
+        }
+        return false;
+    }
+
+    public void removeItem(Item item) {
+        items.remove(item);
     }
 
     public void addItemHorizontally(Item item) {
@@ -31,12 +66,13 @@ public class Bin {
         for (Item i : items.keySet()) {
             widthAvailable -= i.getWidth();
         }
-        items.put(item, new Position(width - widthAvailable, 0));
+        addItemAt(item, new Position(width - widthAvailable, 0));
     }
 
-    public boolean canFit(Item item, Position position) {
+    public Position canFit(Item item) {
 
-        return false;
+
+        return null;
     }
 
     public boolean canFitHorizontally(Item item) {
@@ -61,5 +97,13 @@ public class Bin {
 
     public List<Guillotine> getGuillotines() {
         return guillotines;
+    }
+
+    public Bin duplicate(){
+        Bin b = new Bin(width, height);
+        for(Map.Entry<Item, Position> item : getItems().entrySet()){
+            b.addItemAt(item.getKey(), item.getValue());
+        }
+        return b;
     }
 }

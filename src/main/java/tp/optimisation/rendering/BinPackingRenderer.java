@@ -23,9 +23,9 @@ public class BinPackingRenderer extends ObjectRenderer {
     @Override
     void buildObject() {
         int nbBins = binPacking.getBins().size();
-        width = binPacking.getBins().getFirst().getWidth();
+        width = binPacking.getBins().getFirst().getWidth() * 1.2;
         scaleFactor = (500.0 / nbBins) / width;
-        farLeft = (int) ((- nbBins / 2) * (width + 20) * scaleFactor);
+        farLeft = (int) ((- nbBins / 2) * (width) * scaleFactor);
         renderBins();
     }
 
@@ -41,7 +41,7 @@ public class BinPackingRenderer extends ObjectRenderer {
         }
     }
 
-    private void addNextRow() {
+    public void addNextRow() {
         for (Node n : world.getChildren()) {
             n.setTranslateZ(n.getTranslateZ() - (width + 20) * scaleFactor);
         }
