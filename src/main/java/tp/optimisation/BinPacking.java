@@ -13,10 +13,16 @@ public class BinPacking {
     private List<Bin> bins;
     private Metaheuristic metaheuristic;
 
+    private Runnable runOnUpdate;
+
     public BinPacking(Dataset dataset) {
         this.dataset = dataset;
         this.metaheuristic = new HillClimbingMetaheuristic();
         reset();
+    }
+
+    public void setRunOnUpdate(Runnable runOnUpdate) {
+        this.runOnUpdate = runOnUpdate;
     }
 
     public List<Bin> getBins() {
@@ -64,5 +70,13 @@ public class BinPacking {
     public void getNextIteration() {
         // Get the next bin iteration using the metaheuristic
         bins = metaheuristic.getNextIteration(bins);
+        runOnUpdate.run();
+    }
+
+    public void processUntilConvergence()
+    {
+        for (int i = 0; i < 10; i++) {
+            getNextIteration();
+        }
     }
 }

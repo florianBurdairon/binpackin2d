@@ -7,8 +7,6 @@ import javafx.scene.shape.TriangleMesh;
 import tp.optimisation.Item;
 import tp.optimisation.utils.Position;
 
-import java.util.Random;
-
 public class ItemRenderer extends ObjectRenderer {
     private final Item item;
     private final Position position;
@@ -20,10 +18,8 @@ public class ItemRenderer extends ObjectRenderer {
 
     @Override
     void buildObject() {
-        Random r = new Random();
         final PhongMaterial material = new PhongMaterial();
-        material.setDiffuseColor(new Color(r.nextDouble(0, 1), r.nextDouble(0, 1), r.nextDouble(0, 1), 1));
-        //material.setSpecularColor(Color.LIGHTBLUE);
+        material.setDiffuseColor(new Color(item.getRed(), item.getGreen(), item.getBlue(), 1));
 
         TriangleMesh mesh = new TriangleMesh();
         float higher = Math.max(item.getWidth(), item.getHeight());

@@ -2,10 +2,14 @@ package tp.optimisation.rendering;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
+import javafx.geometry.Insets;
 import javafx.scene.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
@@ -14,6 +18,8 @@ import tp.optimisation.BinPacking;
 import tp.optimisation.Dataset;
 
 public class SceneRenderer extends Application {
+
+    private Scene scene;
 
     private String datasetFile;
     private BinPacking bp;
@@ -55,6 +61,21 @@ public class SceneRenderer extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        BorderPane globalPane = new BorderPane();
+        scene = new Scene(globalPane, 1000, 800);
+
+        globalPane.setCenter(setUp3DScene());
+        globalPane.setRight(setUpCommands());
+
+        handleKeyboard(scene);
+        handleMouse(scene);
+
+        primaryStage.setTitle("Bin Packing 2D");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+    private SubScene setUp3DScene(){
         root.getChildren().add(world);
         world.setDepthTest(DepthTest.ENABLE);
 
@@ -67,51 +88,80 @@ public class SceneRenderer extends Application {
         subScene.setFill(Color.GREY);
         subScene.setCamera(camera);
 
-        BorderPane pane = new BorderPane();
-        Scene scene = new Scene(pane, 1000, 800);
+        return subScene;
+    }
 
-        pane.setCenter(subScene);
-        BorderPane rightPane = new BorderPane();
-        rightPane.setPrefSize(200, 800);
+    private Pane setUpCommands(){
+        BorderPane commandsPane = new BorderPane();
+        commandsPane.setPrefSize(200, 800);
+
+        commandsPane.setTop(selectDatabasePane());
+        commandsPane.setBottom(updateStatePane());
+
+        return commandsPane;
+    }
+
+    private Pane selectDatabasePane() {
+        HBox selectDatabasePane = new HBox();
+        selectDatabasePane.setSpacing(10);
+        selectDatabasePane.setPadding(new Insets(10, 10, 10, 10));
 
         ChoiceBox<String> datasets = new ChoiceBox<>(FXCollections.observableArrayList(
                 "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13"
         ));
         datasets.setValue("01");
-        datasets.setPrefSize(150, 30);
-        datasets.setOnAction(e -> {
-            changeDataset(datasets.getValue());
-        });
+        datasets.setPrefSize(90, 30);
+        datasets.setOnAction(e -> changeDataset(datasets.getValue()));
         changeDataset(datasets.getValue());
-        rightPane.setTop(datasets);
 
-        Button readDatasetButton = new Button("Read dataset");
+        selectDatabasePane.getChildren().add(datasets);
+
+        Button readDatasetButton = new Button("Import");
         readDatasetButton.setOnAction(e -> {
             world.getChildren().clear();
             bp = new BinPacking(Dataset.fromFile(datasetFile));
             bpRenderer = new BinPackingRenderer(bp);
             bpRenderer.renderInto(world);
             bpRenderer.registerEvents(scene);
+            bp.setRunOnUpdate(() -> bpRenderer.addNextRow());
         });
-        readDatasetButton.setPrefSize(150, 50);
-        rightPane.setCenter(readDatasetButton);
+        readDatasetButton.setPrefSize(90, 30);
+        selectDatabasePane.getChildren().add(readDatasetButton);
+
+        return selectDatabasePane;
+    }
+
+    private Pane updateStatePane() {
+        VBox updateStatePane = new VBox();
+        updateStatePane.setSpacing(10);
+        updateStatePane.setPadding(new Insets(10, 10, 10, 10));
 
         Button nextIterationButton = new Button("Next iteration");
         nextIterationButton.setOnAction(e -> {
             bp.getNextIteration();
-            bpRenderer.addNextRow();
         });
-        nextIterationButton.setPrefSize(150, 50);
-        rightPane.setBottom(nextIterationButton);
+        nextIterationButton.setPrefSize(150, 30);
 
-        pane.setRight(rightPane);
+        updateStatePane.getChildren().add(nextIterationButton);
 
-        handleKeyboard(scene);
-        handleMouse(scene);
+        Button processButton = new Button("Process until convergence");
+        processButton.setOnAction(e -> {
+            bp.processUntilConvergence();
+        });
+        processButton.setPrefSize(150, 30);
 
-        primaryStage.setTitle("Bin Packing 2D");
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        updateStatePane.getChildren().add(processButton);
+
+        Button resetButton = new Button("Reset");
+        resetButton.setOnAction(e -> {
+            bp.reset();
+            bpRenderer.reset();
+        });
+        resetButton.setPrefSize(150, 30);
+
+        updateStatePane.getChildren().add(resetButton);
+
+        return updateStatePane;
     }
 
     private void changeDataset(String value) {
