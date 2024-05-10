@@ -2,7 +2,7 @@ package tp.optimisation;
 
 import java.util.Random;
 
-public class Item {
+public class Item implements Cloneable {
     int id;
     int width;
     int height;
@@ -62,5 +62,14 @@ public class Item {
 
     public boolean equals(Item i){
         return this.id == i.id && this.width == i.width && this.height == i.height;
+    }
+
+    @Override
+    public Item clone() {
+        try {
+            return (Item) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }

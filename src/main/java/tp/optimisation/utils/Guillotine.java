@@ -1,6 +1,7 @@
 package tp.optimisation.utils;
 
-public class Guillotine {
+public class Guillotine implements Cloneable {
+
     public enum Direction{
         Vertical,
         Horizontal
@@ -21,5 +22,14 @@ public class Guillotine {
 
     public int getPosition() {
         return position;
+    }
+
+    @Override
+    public Guillotine clone() {
+        try {
+            return (Guillotine) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }

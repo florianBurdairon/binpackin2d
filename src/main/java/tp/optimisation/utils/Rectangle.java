@@ -5,7 +5,7 @@ import tp.optimisation.Item;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Rectangle extends Position{
+public class Rectangle extends Position implements Cloneable {
     private int width;
     private int height;
 
@@ -51,7 +51,22 @@ public class Rectangle extends Position{
         return cutParts;
     }
 
+    public float getArea() {
+        return width * height;
+    }
+
     public boolean equals(Rectangle r){
         return getX() == r.getX() && getY() == r.getY() && width == r.width && height == r.height;
+    }
+
+    @Override
+    public Rectangle clone() {
+        try {
+            Rectangle clone = (Rectangle) super.clone();
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }

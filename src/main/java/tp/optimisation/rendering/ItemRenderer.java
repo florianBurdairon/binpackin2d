@@ -46,7 +46,7 @@ public class ItemRenderer extends ObjectRenderer {
         MeshView meshView = new MeshView(mesh);
         meshView.setMaterial(material);
         meshView.setTranslateX(position.getX());
-        meshView.setTranslateY(position.getY());
+        meshView.setTranslateZ(position.getY());
 
         world.getChildren().add(meshView);
     }

@@ -60,12 +60,10 @@ public class BinRenderer extends ObjectRenderer {
         meshView.setTranslateY(boxHeight - boxHeight*1.05);
         meshView.setScaleZ(1.05);
 
-        System.out.println("Rendering bin...");
         for(Map.Entry<Item, Position> entry : bin.getItems().entrySet()) {
             ItemRenderer itemRenderer = new ItemRenderer(
                     entry.getKey(),
                     entry.getValue());
-            System.out.println("Rendering item " + entry.getKey());
             itemRenderer.renderInto(binGroup);
             binGroup.getChildren().add(itemRenderer);
         }

@@ -11,17 +11,20 @@ public class NeighboursCalculator extends AbstractNeighboursCalculator {
     public List<List<Bin>> calcNeighbours(List<Bin> bins) {
         List<List<Bin>> neighbours = new ArrayList<>();
 
-        for (Bin originalBin : bins) {
-            for (Item item : originalBin.getItems().keySet()) {
-                List<Bin> b = new ArrayList<>();
-                for (Bin bin : bins) {
-                    b.add(bin.duplicate());
-                }
+        for (int i = 0; i < bins.size(); i++) {
+            for (int k = 0; k < bins.get(i).getItems().size(); k++) {
 
-                for (Bin destBin : b) {
-                    if (!destBin.equals(originalBin)) {
-                        if (destBin.addItem(item)) {
-                            // TODO: Fix this (Add Cloneable everywhere)
+                for (int j = 0; j < bins.size(); j++) {
+                    if (i != j) {
+                        List<Bin> b = new ArrayList<>(bins.stream().map(Bin::clone).toList());
+                        Item item = (Item) b.get(i).getItems().keySet().toArray()[k];
+                        if (b.get(j).addItem(item)) {
+                            b.get(i).removeItem(item);
+                            if (b.get(i).isEmpty()) {
+                                b.remove(i);
+                            }
+
+                            neighbours.add(b);
                         }
                     }
                 }
