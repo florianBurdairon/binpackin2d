@@ -36,7 +36,11 @@ public class UtilsTest {
                 // Half Inside
                 Arguments.of(new Rectangle(0, 0, 2, 4), new Rectangle(1, 1, 2, 2), true),
                 // Quarter Inside
-                Arguments.of(new Rectangle(0, 0, 2, 2), new Rectangle(1, 1, 2, 2), true)
+                Arguments.of(new Rectangle(0, 0, 2, 2), new Rectangle(1, 1, 2, 2), true),
+                // Same Width
+                Arguments.of(new Rectangle(0, 0, 2, 2), new Rectangle(0, 0, 2, 1), true),
+                // Same Height
+                Arguments.of(new Rectangle(0, 0, 2, 2), new Rectangle(0, 0, 1, 2), true)
         );
     }
 }

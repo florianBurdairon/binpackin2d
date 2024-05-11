@@ -7,9 +7,9 @@ public class Item implements Cloneable {
     int width;
     int height;
 
-    final float red;
-    final float green;
-    final float blue;
+    float red;
+    float green;
+    float blue;
 
     public Item(int id, int width, int height) {
         this.id = id;
@@ -41,7 +41,9 @@ public class Item implements Cloneable {
     }
 
     public Item asRotated() {
-        return new Item(id, height, width);
+        Item i = this.clone();
+        i.rotate();
+        return i;
     }
 
     public float getRed() {

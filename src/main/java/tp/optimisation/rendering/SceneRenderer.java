@@ -139,6 +139,7 @@ public class SceneRenderer extends Application {
         Button nextIterationButton = new Button("Next iteration");
         nextIterationButton.setOnAction(e -> {
             bp.getNextIteration();
+            bpRenderer.registerEvents(scene);
         });
         nextIterationButton.setPrefSize(150, 30);
 
@@ -147,6 +148,7 @@ public class SceneRenderer extends Application {
         Button processButton = new Button("Process until convergence");
         processButton.setOnAction(e -> {
             bp.processUntilConvergence();
+            bpRenderer.registerEvents(scene);
         });
         processButton.setPrefSize(150, 30);
 

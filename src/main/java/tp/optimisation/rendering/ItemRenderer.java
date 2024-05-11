@@ -22,7 +22,7 @@ public class ItemRenderer extends ObjectRenderer {
         material.setDiffuseColor(new Color(item.getRed(), item.getGreen(), item.getBlue(), 1));
 
         TriangleMesh mesh = new TriangleMesh();
-        float higher = Math.max(item.getWidth(), item.getHeight());
+        float higher = Math.min(Math.max(item.getWidth(), item.getHeight()), 190);
         mesh.getPoints().addAll(
                 0, 0, 0,
                 item.getWidth(), 0, 0,

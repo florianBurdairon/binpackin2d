@@ -26,6 +26,17 @@ public class NeighboursCalculator extends AbstractNeighboursCalculator {
 
                             neighbours.add(b);
                         }
+
+//                        b = new ArrayList<>(bins.stream().map(Bin::clone).toList());
+//                        item = (Item) b.get(i).getItems().keySet().toArray()[k];
+//                        if (b.get(j).addItem(item.asRotated())) {
+//                            b.get(i).removeItem(item);
+//                            if (b.get(i).isEmpty()) {
+//                                b.remove(i);
+//                            }
+//
+//                            neighbours.add(b);
+//                        }
                     }
                 }
             }

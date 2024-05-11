@@ -14,6 +14,10 @@ public class Utils {
     }
 
     public static boolean isItemOverlapping(Rectangle rectangle1, Rectangle rectangle2) {
+        // Check if the items have the same position and width
+        if (rectangle1.getX() == rectangle2.getX() && rectangle1.getY() == rectangle2.getY() && rectangle1.getWidth() == rectangle2.getWidth()) {
+            return true;
+        }
         // Get the highest item
         Rectangle highestItem = rectangle1.getY() > rectangle2.getY() ? rectangle1 : rectangle2;
 

@@ -63,7 +63,6 @@ public class Rectangle extends Position implements Cloneable {
     public Rectangle clone() {
         try {
             Rectangle clone = (Rectangle) super.clone();
-            // TODO: copy mutable state here, so the clone can't change the internals of the original
             return clone;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();

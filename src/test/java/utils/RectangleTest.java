@@ -61,7 +61,9 @@ public class RectangleTest {
                 Arguments.of(new Guillotine(Guillotine.Direction.Vertical, 5), new Rectangle(0, 0, 5, 10), new Rectangle(5, 0, 5, 10)),
                 Arguments.of(new Guillotine(Guillotine.Direction.Vertical, 8), new Rectangle(0, 0, 8, 10), new Rectangle(8, 0, 2, 10)),
                 Arguments.of(new Guillotine(Guillotine.Direction.Horizontal, 5), new Rectangle(0, 0, 10, 5), new Rectangle(0, 5, 10, 5)),
-                Arguments.of(new Guillotine(Guillotine.Direction.Horizontal, 8), new Rectangle(0, 0, 10, 8), new Rectangle(0, 8, 10, 2))
+                Arguments.of(new Guillotine(Guillotine.Direction.Horizontal, 8), new Rectangle(0, 0, 10, 8), new Rectangle(0, 8, 10, 2)),
+                Arguments.of(new Guillotine(Guillotine.Direction.Vertical, 10), new Rectangle(0, 0, 10, 10), new Rectangle(10, 0, 0, 10)),
+                Arguments.of(new Guillotine(Guillotine.Direction.Horizontal, 10), new Rectangle(0, 0, 10, 10), new Rectangle(0, 10, 10, 0))
         );
     }
 
