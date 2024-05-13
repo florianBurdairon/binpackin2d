@@ -71,7 +71,6 @@ public class Bin implements Cloneable {
 
     // Finite First Fit algorithm
     public HashMap<Item, Position> FFF(List<Item> items) {
-        List<Bin> bins = new ArrayList<>();
         HashMap<Item, Position> itemPositions = new HashMap<>();
 
         // Sort by decreasing height
@@ -88,7 +87,7 @@ public class Bin implements Cloneable {
             boolean placed = false;
             for (Position level : levelsPosition) {
                 if (level.getX() + item.width <= width) {
-                    itemPositions.put(item, level);
+                    itemPositions.put(item, new Position(level.getX(), level.getY()));
                     level.setX(level.getX() + item.width);
                     placed = true;
                     break;
@@ -97,11 +96,12 @@ public class Bin implements Cloneable {
             // If it still does not fit, create new level of height = item.height
             if (!placed) {
                 // If sum of all level.height > bin.height = return null
-                currentMaxHeight += item.getHeight();
-                if (currentMaxHeight > height) {
+                if (currentMaxHeight + item.getHeight() > height) {
                     return null;
                 }
-                levelsPosition.add(new Position(0, currentMaxHeight));
+                levelsPosition.add(new Position(item.width, currentMaxHeight));
+                itemPositions.put(item, new Position(0, currentMaxHeight));
+                currentMaxHeight += item.getHeight();
             }
         }
         // else, return HashMap<Item, Position>
