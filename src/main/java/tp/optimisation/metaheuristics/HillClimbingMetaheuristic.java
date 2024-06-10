@@ -2,6 +2,7 @@ package tp.optimisation.metaheuristics;
 
 import tp.optimisation.Bin;
 import tp.optimisation.neighbours.NeighboursCalculator;
+import tp.optimisation.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +20,7 @@ public class HillClimbingMetaheuristic extends Metaheuristic {
         List<Bin> bestNeighbour = new ArrayList<Bin>();
         float bestWeight = binsWeight;
         for (List<Bin> neighbour : neighbours) {
-            float neighbourWeight = 0;
-            for (Bin bin : neighbour) {
-                neighbourWeight += bin.getWeight();
-            }
+            float neighbourWeight = Utils.getBinPackingWeight(neighbour);
             if (neighbourWeight < bestWeight) {
                 bestNeighbour = neighbour;
                 bestWeight = neighbourWeight;

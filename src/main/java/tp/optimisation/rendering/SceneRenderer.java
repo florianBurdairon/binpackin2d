@@ -3,6 +3,7 @@ package tp.optimisation.rendering;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -13,6 +14,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import tp.optimisation.BinPacking;
 import tp.optimisation.Dataset;
@@ -24,6 +26,9 @@ public class SceneRenderer extends Application {
     private String datasetFile;
     private BinPacking bp;
     private BinPackingRenderer bpRenderer;
+
+    private Text nbBinsText;
+    private Text nbIterationsText;
 
     final Group root = new Group();
     final XForm axisGroup = new XForm();
@@ -124,6 +129,7 @@ public class SceneRenderer extends Application {
             bpRenderer.renderInto(world);
             bpRenderer.registerEvents(scene);
             bp.setRunOnUpdate(() -> bpRenderer.addNextRow());
+            updateValues();
         });
         readDatasetButton.setPrefSize(90, 30);
         selectDatabasePane.getChildren().add(readDatasetButton);
@@ -135,10 +141,17 @@ public class SceneRenderer extends Application {
         VBox updateStatePane = new VBox();
         updateStatePane.setSpacing(10);
         updateStatePane.setPadding(new Insets(10, 10, 10, 10));
+        updateStatePane.setAlignment(Pos.CENTER);
+
+        nbBinsText = new Text();
+        nbIterationsText = new Text();
+        updateStatePane.getChildren().addAll(nbBinsText, nbIterationsText);
+
 
         Button nextIterationButton = new Button("Next iteration");
         nextIterationButton.setOnAction(e -> {
             bp.getNextIteration();
+            updateValues();
             bpRenderer.registerEvents(scene);
         });
         nextIterationButton.setPrefSize(150, 30);
@@ -148,6 +161,7 @@ public class SceneRenderer extends Application {
         Button processButton = new Button("Process until convergence");
         processButton.setOnAction(e -> {
             bp.processUntilConvergence();
+            updateValues();
             bpRenderer.registerEvents(scene);
         });
         processButton.setPrefSize(150, 30);
@@ -157,6 +171,7 @@ public class SceneRenderer extends Application {
         Button resetButton = new Button("Reset");
         resetButton.setOnAction(e -> {
             bp.reset();
+            updateValues();
             bpRenderer.reset();
         });
         resetButton.setPrefSize(150, 30);
@@ -164,6 +179,12 @@ public class SceneRenderer extends Application {
         updateStatePane.getChildren().add(resetButton);
 
         return updateStatePane;
+    }
+
+    private void updateValues()
+    {
+        nbBinsText.setText("Nb bins: " + bp.getBins().size());
+        nbIterationsText.setText("Nb iterations: " + bp.getNbIterations());
     }
 
     private void changeDataset(String value) {

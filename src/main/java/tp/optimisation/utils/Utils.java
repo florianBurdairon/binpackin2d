@@ -1,7 +1,10 @@
 package tp.optimisation.utils;
 
+import tp.optimisation.Bin;
 import tp.optimisation.Dataset;
 import tp.optimisation.Item;
+
+import java.util.List;
 
 public class Utils {
     public static int minimumBinPacking(Dataset dataset) {
@@ -37,5 +40,13 @@ public class Utils {
             return true;
         }
         return false;
+    }
+
+    public static float getBinPackingWeight(List<Bin> bins) {
+        float sum = 0;
+        for (Bin bin : bins) {
+            sum += bin.getWeight();
+        }
+        return sum;
     }
 }

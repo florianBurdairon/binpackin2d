@@ -1,7 +1,6 @@
 package tp.optimisation.rendering;
 
 import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -10,12 +9,9 @@ import javafx.scene.shape.MeshView;
 import javafx.scene.shape.TriangleMesh;
 import tp.optimisation.Bin;
 import tp.optimisation.Item;
-import tp.optimisation.utils.Guillotine;
 import tp.optimisation.utils.Position;
-import tp.optimisation.utils.Rectangle;
 
 import java.util.Map;
-import java.util.Objects;
 
 public class BinRenderer extends ObjectRenderer {
     private final Bin bin;
@@ -88,26 +84,6 @@ public class BinRenderer extends ObjectRenderer {
     @Override
     protected void addKeyboardEvents(Scene scene) {
         scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-            if (Objects.requireNonNull(event.getCode()) == KeyCode.E) {
-                if (emptySpacesRenderer.getChildren().isEmpty()) {
-                    for(Rectangle emptySpace : bin.getEmptySpaces()) {
-                        RectangleRenderer rectangleRenderer = new RectangleRenderer(emptySpace);
-                        rectangleRenderer.renderInto(emptySpacesRenderer);
-                    }
-                }else {
-                    emptySpacesRenderer.getChildren().clear();
-                }
-            }
-            if (Objects.requireNonNull(event.getCode()) == KeyCode.G) {
-                if (guillotinesRenderer.getChildren().isEmpty()) {
-                    for(Guillotine guillotine : bin.getGuillotines()) {
-                        GuillotineRenderer guillotineRenderer = new GuillotineRenderer(guillotine, bin.getWidth());
-                        guillotineRenderer.renderInto(guillotinesRenderer);
-                    }
-                } else {
-                    guillotinesRenderer.getChildren().clear();
-                }
-            }
         });
     }
 }

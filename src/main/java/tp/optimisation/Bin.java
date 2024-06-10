@@ -2,7 +2,6 @@ package tp.optimisation;
 
 import tp.optimisation.utils.Guillotine;
 import tp.optimisation.utils.Position;
-import tp.optimisation.utils.Rectangle;
 
 import java.util.*;
 
@@ -10,17 +9,18 @@ public class Bin implements Cloneable {
     private final int width;
     private final int height;
 
+    private final int id;
+    private static int nextId = 0;
+
     private Map<Item, Position> items;
     private ArrayList<Guillotine> guillotines;
-    private ArrayList<Rectangle> emptySpaces;
 
     public Bin(int width, int height) {
         this.width = width;
         this.height = height;
         this.items = new HashMap<>();
         this.guillotines = new ArrayList<>();
-        emptySpaces = new ArrayList<>();
-        emptySpaces.add(new Rectangle(0, 0, width, height));
+        this.id = nextId++;
     }
 
     private void addItemAt(Item item, Position position) {
@@ -56,11 +56,11 @@ public class Bin implements Cloneable {
         return false;
     }*/
 
-    // Reorganize the items in the bin each time a new item is added using FFF algorithm
+    // Reorganize the items in the bin each time a new item is added using FFDH algorithm
     public boolean addItem(Item item) {
         ArrayList<Item> items = new ArrayList<>(this.items.keySet());
         items.add(item);
-        HashMap<Item, Position> itemsPositions = FFF(items);
+        HashMap<Item, Position> itemsPositions = FFDH(items);
         if (itemsPositions == null) {
             return false;
         } else {
@@ -69,8 +69,8 @@ public class Bin implements Cloneable {
         }
     }
 
-    // Finite First Fit algorithm
-    public HashMap<Item, Position> FFF(List<Item> items) {
+    // First Fit Decreasing Height algorithm
+    public HashMap<Item, Position> FFDH(List<Item> items) {
         HashMap<Item, Position> itemPositions = new HashMap<>();
 
         // Sort by decreasing height
@@ -130,21 +130,16 @@ public class Bin implements Cloneable {
         addItemAt(item, new Position(width - widthAvailable, 0));
     }
 
-    public Position canFit(Item item) {
-        for (Rectangle r : emptySpaces) {
-            if (r.getWidth() >= item.width && r.getHeight() >= item.height) {
-                return new Position(r.getX(), r.getY());
-            }
-        }
-        return null;
-    }
-
     public boolean canFitHorizontally(Item item) {
         int widthAvailable = width;
         for (Item i : items.keySet()) {
             widthAvailable -= i.getWidth();
         }
         return item.getWidth() <= widthAvailable;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public int getWidth() {
@@ -159,12 +154,12 @@ public class Bin implements Cloneable {
         return items;
     }
 
-    public List<Guillotine> getGuillotines() {
-        return guillotines;
+    public int getItemsCount() {
+        return items.size();
     }
 
-    public List<Rectangle> getEmptySpaces() {
-        return emptySpaces;
+    public List<Guillotine> getGuillotines() {
+        return guillotines;
     }
 
     @Override
@@ -173,7 +168,6 @@ public class Bin implements Cloneable {
             Bin clone = (Bin) super.clone();
             clone.items = (Map<Item, Position>) ((HashMap<Item, Position>)items).clone();
             clone.guillotines = (ArrayList<Guillotine>) guillotines.clone();
-            clone.emptySpaces = (ArrayList<Rectangle>) emptySpaces.clone();
             return clone;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
@@ -188,18 +182,25 @@ public class Bin implements Cloneable {
         float surface = width * height;
         float weight = 1;
 
-        for(Rectangle r : emptySpaces) {
-            weight -= (r.getArea() / surface);
+        for(Item i : items.keySet()) {
+            weight -= (i.getWidth() * i.getHeight() / surface);
         }
-
-        weight = Math.abs(weight - 0.5f) * 2;
-
-        if(items.size() == 2) {
-            weight *= 0.9f;
-        } else if (items.size() == 1) {
-            weight *= 0.5f;
-        }
+//
+//        weight = Math.abs(weight - 0.5f) * 2;
+//
+//        if(items.size() == 2) {
+//            weight *= 0.9f;
+//        } else if (items.size() == 1) {
+//            weight *= 0.5f;
+//        }
 
         return weight;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Bin b)
+            return b.id == this.id;
+        return false;
     }
 }
