@@ -1,8 +1,8 @@
 package tp.optimisation;
 
 
+import tp.optimisation.metaheuristics.GeneticMetaheuristic;
 import tp.optimisation.metaheuristics.Metaheuristic;
-import tp.optimisation.metaheuristics.TabouMetaheuristic;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -91,10 +91,10 @@ public class BinPacking {
     }
 
     public void reset() {
-        this.metaheuristic = new TabouMetaheuristic();
+        this.metaheuristic = new GeneticMetaheuristic();
         // Reset the bins to their initial state
         bins = new ArrayList<>();
-        FFF();
+        FFDH();
     }
 
     public void getNextIteration() {

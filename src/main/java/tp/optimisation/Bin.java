@@ -23,6 +23,17 @@ public class Bin implements Cloneable {
         this.id = nextId++;
     }
 
+    public Bin(List<Item> items, int width, int height) {
+        this.width = width;
+        this.height = height;
+        this.items = new HashMap<>();
+        this.guillotines = new ArrayList<>();
+        this.id = nextId++;
+        for (Item item : items) {
+            addItem(item);
+        }
+    }
+
     private void addItemAt(Item item, Position position) {
         items.put(item, position);
 //        Guillotine g = new Guillotine(Guillotine.Direction.Vertical, position.getX() + item.width);
@@ -185,16 +196,18 @@ public class Bin implements Cloneable {
         for(Item i : items.keySet()) {
             weight -= (i.getWidth() * i.getHeight() / surface);
         }
-//
-//        weight = Math.abs(weight - 0.5f) * 2;
-//
-//        if(items.size() == 2) {
-//            weight *= 0.9f;
-//        } else if (items.size() == 1) {
-//            weight *= 0.5f;
-//        }
+
+        weight = (float) Math.sqrt(weight);
 
         return weight;
+    }
+
+    public List<Integer> getItemIdList() {
+        List<Integer> ids = new ArrayList<>();
+        for (Item i : items.keySet()) {
+            ids.add(i.getId());
+        }
+        return ids;
     }
 
     @Override

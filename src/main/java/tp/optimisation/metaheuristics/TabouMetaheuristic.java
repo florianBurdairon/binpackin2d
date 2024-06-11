@@ -1,7 +1,9 @@
 package tp.optimisation.metaheuristics;
 
 import tp.optimisation.Bin;
-import tp.optimisation.neighbours.NeighboursCalculator;
+import tp.optimisation.Item;
+import tp.optimisation.neighbours.AbstractNeighboursCalculator;
+import tp.optimisation.neighbours.SwitchNeighboursCalculator;
 import tp.optimisation.utils.Utils;
 
 import java.util.ArrayList;
@@ -10,8 +12,8 @@ import java.util.Queue;
 
 public class TabouMetaheuristic extends Metaheuristic {
 
-    private final int maxSizeTabouList = 2;
-    private final Queue<Bin> prohibitedMoves = new java.util.LinkedList<Bin>();
+    private final int maxSizeTabouList = 4;
+    private final Queue<Item> prohibitedMoves = new java.util.LinkedList<Item>();
 
     @Override
     public List<Bin> getNextIteration(List<Bin> bins) {
@@ -20,20 +22,25 @@ public class TabouMetaheuristic extends Metaheuristic {
             binsWeight += bin.getWeight();
         }
 
-        NeighboursCalculator neighboursCalculator = new NeighboursCalculator();
+        AbstractNeighboursCalculator neighboursCalculator = new SwitchNeighboursCalculator();
         List<List<Bin>> neighbours = neighboursCalculator.calcNeighbours(bins);
         List<Bin> bestNeighbour = new ArrayList<Bin>();
         float bestWeight = Float.MAX_VALUE;
         for (List<Bin> neighbour : neighbours) {
-            Bin goalBin = getGoalBin(bins, neighbour);
+            List<Item> modifiedItems = getModifiedItems(bins, neighbour);
             // If goal bin is in prohibited bins
-            if (prohibitedMoves.contains(goalBin)) {
-                break;
+            boolean isProhibited = false;
+            for (Item item : modifiedItems) {
+                if (prohibitedMoves.contains(item)) {
+                    isProhibited = true;
+                }
             }
-            float neighbourWeight = Utils.getBinPackingWeight(neighbour);
-            if (neighbourWeight < bestWeight) {
-                bestNeighbour = neighbour;
-                bestWeight = neighbourWeight;
+            if (!isProhibited) {
+                float neighbourWeight = Utils.getBinPackingWeight(neighbour);
+                if (neighbourWeight < bestWeight) {
+                    bestNeighbour = neighbour;
+                    bestWeight = neighbourWeight;
+                }
             }
         }
 
@@ -50,33 +57,37 @@ public class TabouMetaheuristic extends Metaheuristic {
         }
         // Found one solution but degrades the last one
         else {
-            Bin originalBin = getOriginalBin(bins, bestNeighbour);
-            System.out.println("Banning bin " + originalBin.getId());
-            prohibitedMoves.offer(originalBin);
-            if (prohibitedMoves.size() > maxSizeTabouList) {
-                prohibitedMoves.poll();
+            List<Item> modifiedItems = getModifiedItems(bins, bestNeighbour);
+            for (Item item : modifiedItems) {
+                System.out.println("Banning item: " + item.getId());
+            }
+            prohibitedMoves.addAll(modifiedItems);
+            while (prohibitedMoves.size() > maxSizeTabouList) {
+                prohibitedMoves.remove();
             }
             return bestNeighbour;
         }
     }
 
-    private Bin getOriginalBin(List<Bin> previousList, List<Bin> newList) {
-        if (previousList.size() != newList.size())
-            return null;
-        for (int i = 0; i < previousList.size(); i++) {
-            if (previousList.get(i).getItemsCount() > newList.get(i).getItemsCount()) {
-                return newList.get(i);
+    private List<Item> getModifiedItems(List<Bin> bins, List<Bin> neighbour) {
+        List<Item> modifiedItems = new ArrayList<Item>();
+        for (Bin value : bins) {
+            for (Bin bin : neighbour) {
+                if (value.getId() == bin.getId()) {
+                    Item i = getModifiedItemInBin(value, bin);
+                    if (i != null) {
+                        modifiedItems.add(i);
+                    }
+                }
             }
         }
-        return null;
+        return modifiedItems;
     }
 
-    private Bin getGoalBin(List<Bin> previousList, List<Bin> newList) {
-        if (previousList.size() != newList.size())
-            return null;
-        for (int i = 0; i < previousList.size(); i++) {
-            if (previousList.get(i).getItemsCount() < newList.get(i).getItemsCount()) {
-                return newList.get(i);
+    private Item getModifiedItemInBin(Bin previousBin, Bin newBin) {
+        for (Item item : previousBin.getItems().keySet()) {
+            if (!newBin.getItems().containsKey(item)) {
+                return item;
             }
         }
         return null;
