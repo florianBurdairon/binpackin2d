@@ -44,13 +44,32 @@ public class SwitchNeighboursCalculator extends AbstractNeighboursCalculator {
                             Item item1 = (Item) bin1.getItems().keySet().toArray()[k];
                             for (int l = 0; l < bin2.getItems().size(); l++) {
                                 Item item2 = (Item) bin2.getItems().keySet().toArray()[l];
-                                bin1.removeItem(item1);
-                                bin2.removeItem(item2);
+                                bin1.removeItemById(item1.getId());
+                                bin2.removeItemById(item2.getId());
+                                // No rotation
                                 if (bin1.addItem(item2) && bin2.addItem(item1)) {
                                     neighbours.add(new ArrayList<>(b.stream().map(Bin::clone).toList()));
                                 }
-                                bin1.removeItem(item2);
-                                bin2.removeItem(item1);
+                                bin1.removeItemById(item2.getId());
+                                bin2.removeItemById(item1.getId());
+                                // Item2 as rotated
+                                if(bin1.addItem(item2.asRotated()) && bin2.addItem(item1)) {
+                                    neighbours.add(new ArrayList<>(b.stream().map(Bin::clone).toList()));
+                                }
+                                bin1.removeItemById(item2.getId());
+                                bin2.removeItemById(item1.getId());
+                                // Item1 as rotated
+                                if(bin1.addItem(item2) && bin2.addItem(item1.asRotated())) {
+                                    neighbours.add(new ArrayList<>(b.stream().map(Bin::clone).toList()));
+                                }
+                                bin1.removeItemById(item2.getId());
+                                bin2.removeItemById(item1.getId());
+                                // Both as rotated
+                                if(bin1.addItem(item2.asRotated()) && bin2.addItem(item1.asRotated())) {
+                                    neighbours.add(new ArrayList<>(b.stream().map(Bin::clone).toList()));
+                                }
+                                bin1.removeItemById(item2.getId());
+                                bin2.removeItemById(item1.getId());
                                 bin1.addItem(item1);
                                 bin2.addItem(item2);
                             }

@@ -11,13 +11,40 @@ import java.util.List;
 import java.util.Random;
 
 public class GeneticMetaheuristic extends Metaheuristic {
+    private final float MUTATION_RATE = 0.5f;
+
     private Random random = new Random();
-    private final float nbBestSolutions = 5.0f;
-    private final float mutationRate = 0.5f;
+    private float nbBestSolutions = 5.0f;
+    private float mutationRate = MUTATION_RATE;
 
     private List<List<Bin>> population = new ArrayList<>();
 
-    private AbstractNeighboursCalculator neighboursCalculator;
+    public GeneticMetaheuristic(AbstractNeighboursCalculator neighboursCalculator) {
+        super(neighboursCalculator);
+    }
+
+    @Override
+    public void reset() {
+        population.clear();
+        mutationRate = MUTATION_RATE;
+        super.reset();
+    }
+
+    public float getNbBestSolutions() {
+        return nbBestSolutions;
+    }
+
+    public void setNbBestSolutions(float nbBestSolutions) {
+        this.nbBestSolutions = nbBestSolutions;
+    }
+
+    public float getMutationRate() {
+        return mutationRate;
+    }
+
+    public void setMutationRate(float mutationRate) {
+        this.mutationRate = mutationRate;
+    }
 
     @Override
     public List<Bin> getNextIteration(List<Bin> bins) {
@@ -25,7 +52,6 @@ public class GeneticMetaheuristic extends Metaheuristic {
         if (population.isEmpty()) {
             neighboursCalculator = new SwitchNeighboursCalculator();
             population = neighboursCalculator.calcNeighbours(bins);
-            System.out.println("Nb population: " + population.size());
         }
 
         // Sort them by fitness
@@ -51,12 +77,6 @@ public class GeneticMetaheuristic extends Metaheuristic {
                 population.add(solution);
             }
         }
-
-        float sum = 0.0f;
-        for (List<Bin> solution : population) {
-            sum += Utils.getBinPackingWeight(solution);
-        }
-        System.out.println("Mean of weights: " + (sum / nbBestSolutions));
 
         // Return best solution but keep others in memory
         return population.stream().max(Comparator.comparing(Utils::getBinPackingWeight)).orElse(bins);

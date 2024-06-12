@@ -1,12 +1,13 @@
 package tp.optimisation.rendering;
 
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -18,6 +19,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import tp.optimisation.BinPacking;
 import tp.optimisation.Dataset;
+import tp.optimisation.metaheuristics.*;
+import tp.optimisation.neighbours.SwitchNeighboursCalculator;
 
 public class SceneRenderer extends Application {
 
@@ -60,8 +63,8 @@ public class SceneRenderer extends Application {
     double mouseDeltaX;
     double mouseDeltaY;
 
-    public static void main(String[] args) {
-        launch(args);
+    public void startApplication() {
+        launch();
     }
 
     @Override
@@ -101,6 +104,7 @@ public class SceneRenderer extends Application {
         commandsPane.setPrefSize(200, 800);
 
         commandsPane.setTop(selectDatabasePane());
+        commandsPane.setCenter(changeParametersPane());
         commandsPane.setBottom(updateStatePane());
 
         return commandsPane;
@@ -137,6 +141,98 @@ public class SceneRenderer extends Application {
         return selectDatabasePane;
     }
 
+    private Pane changeParametersPane() {
+        VBox parametersPane = new VBox();
+        parametersPane.setSpacing(10);
+        parametersPane.setPadding(new Insets(10, 10, 10, 10));
+        parametersPane.setAlignment(Pos.CENTER_LEFT);
+
+        ToggleGroup radioGroup = new ToggleGroup();
+
+        RadioButton rbHill = new RadioButton("Hill Climbing");
+        rbHill.setToggleGroup(radioGroup);
+        rbHill.setUserData(new HillClimbingMetaheuristic(new SwitchNeighboursCalculator()));
+        rbHill.setSelected(true);
+        RadioButton rbTabou = new RadioButton("Tabou");
+        rbTabou.setToggleGroup(radioGroup);
+        rbTabou.setUserData(new TabouMetaheuristic(new SwitchNeighboursCalculator()));
+        RadioButton rbGenetic = new RadioButton("Genetic");
+        rbGenetic.setToggleGroup(radioGroup);
+        rbGenetic.setUserData(new GeneticMetaheuristic(new SwitchNeighboursCalculator()));
+        RadioButton rbAnneal = new RadioButton("Simulating Annealing");
+        rbAnneal.setToggleGroup(radioGroup);
+        rbAnneal.setUserData(new SimulatingAnnealingMetaheuristic(new SwitchNeighboursCalculator()));
+
+        VBox paramByMetaheuristic = new VBox();
+        paramByMetaheuristic.setSpacing(5);
+        paramByMetaheuristic.setPadding(new Insets(5, 5, 5, 5));
+        paramByMetaheuristic.setAlignment(Pos.CENTER_RIGHT);
+
+        radioGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+            public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
+                Metaheuristic metaheuristic = (Metaheuristic) newValue.getUserData();
+                metaheuristic.reset();
+                changeParameters(paramByMetaheuristic, metaheuristic);
+                bp.setMetaheuristic(metaheuristic);
+                updateValues();
+                bpRenderer.reset();
+            }
+        });
+
+        parametersPane.getChildren().addAll(rbHill, rbTabou, rbGenetic, rbAnneal);
+        parametersPane.getChildren().add(paramByMetaheuristic);
+        return parametersPane;
+    }
+
+    private void changeParameters(VBox box, Metaheuristic metaheuristic) {
+        box.getChildren().clear();
+        Button buttonSave = new Button("Save");
+        if (metaheuristic instanceof HillClimbingMetaheuristic) {
+            return;
+        } else if (metaheuristic instanceof TabouMetaheuristic t) {
+            HBox line1 = new HBox();
+            Text textLine1 = new Text("List size: ");
+            TextField textFieldLine1 = new TextField();
+            textFieldLine1.setText(String.valueOf(t.getMaxSizeTabouList()));
+
+            buttonSave.setOnAction(actionEvent -> {
+                t.setMaxSizeTabouList(Integer.parseInt(textFieldLine1.textProperty().getValue()));
+            });
+            line1.getChildren().addAll(textLine1, textFieldLine1);
+            box.getChildren().add(line1);
+        } else if (metaheuristic instanceof GeneticMetaheuristic g) {
+            HBox line1 = new HBox();
+            Text textLine1 = new Text("Best Solutions: ");
+            TextField textFieldLine1 = new TextField();
+            textFieldLine1.setText(String.valueOf(g.getNbBestSolutions()));
+            line1.getChildren().addAll(textLine1, textFieldLine1);
+            HBox line2 = new HBox();
+            Text textLine2 = new Text("Mutation Rate: ");
+            TextField textFieldLine2 = new TextField();
+            textFieldLine2.setText(String.valueOf(g.getMutationRate()));
+
+            buttonSave.setOnAction(actionEvent -> {
+                g.setNbBestSolutions(Float.parseFloat(textFieldLine1.textProperty().getValue()));
+                g.setMutationRate(Float.parseFloat(textFieldLine2.textProperty().getValue()));
+            });
+            line2.getChildren().addAll(textLine2, textFieldLine2);
+            box.getChildren().addAll(line1, line2);
+
+        } else if (metaheuristic instanceof SimulatingAnnealingMetaheuristic s) {
+            HBox line1 = new HBox();
+            Text textLine1 = new Text("Cooling Rate: ");
+            TextField textFieldLine1 = new TextField();
+            textFieldLine1.setText(String.valueOf(s.getCoolingRate()));
+
+            buttonSave.setOnAction(actionEvent -> {
+                s.setCoolingRate(Float.parseFloat(textFieldLine1.textProperty().getValue()));
+            });
+            line1.getChildren().addAll(textLine1, textFieldLine1);
+            box.getChildren().add(line1);
+        }
+        box.getChildren().add(buttonSave);
+    }
+
     private Pane updateStatePane() {
         VBox updateStatePane = new VBox();
         updateStatePane.setSpacing(10);
@@ -158,7 +254,7 @@ public class SceneRenderer extends Application {
 
         updateStatePane.getChildren().add(nextIterationButton);
 
-        Button processButton = new Button("Process until convergence");
+        Button processButton = new Button("10 iterations");
         processButton.setOnAction(e -> {
             bp.processUntilConvergence();
             updateValues();
@@ -192,7 +288,6 @@ public class SceneRenderer extends Application {
     }
 
     private void buildCamera() {
-        System.out.println("buildCamera()");
         root.getChildren().add(cameraXForm);
         cameraXForm.getChildren().add(cameraXForm2);
         cameraXForm2.getChildren().add(cameraXForm3);
@@ -208,7 +303,6 @@ public class SceneRenderer extends Application {
 
 
     private void buildAxes() {
-        System.out.println("buildAxes()");
         final PhongMaterial redMaterial = new PhongMaterial();
         redMaterial.setDiffuseColor(Color.DARKRED);
         redMaterial.setSpecularColor(Color.RED);
@@ -235,7 +329,6 @@ public class SceneRenderer extends Application {
     }
 
     private void buildLight() {
-        System.out.println("buildLight()");
         PointLight pointLight = new PointLight();
         pointLight.setColor(Color.WHITE);
         pointLight.setConstantAttenuation(3);
@@ -298,4 +391,5 @@ public class SceneRenderer extends Application {
             }
         });
     }
+
 }

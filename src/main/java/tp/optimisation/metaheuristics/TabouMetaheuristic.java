@@ -3,7 +3,6 @@ package tp.optimisation.metaheuristics;
 import tp.optimisation.Bin;
 import tp.optimisation.Item;
 import tp.optimisation.neighbours.AbstractNeighboursCalculator;
-import tp.optimisation.neighbours.SwitchNeighboursCalculator;
 import tp.optimisation.utils.Utils;
 
 import java.util.ArrayList;
@@ -11,28 +10,47 @@ import java.util.List;
 import java.util.Queue;
 
 public class TabouMetaheuristic extends Metaheuristic {
+    private final int MAX_SIZE = 4;
 
-    private final int maxSizeTabouList = 4;
-    private final Queue<Item> prohibitedMoves = new java.util.LinkedList<Item>();
+    private int maxSizeTabouList = MAX_SIZE;
+    private final Queue<Integer> prohibitedMoves = new java.util.LinkedList<Integer>();
+
+    public TabouMetaheuristic(AbstractNeighboursCalculator neighboursCalculator) {
+        super(neighboursCalculator);
+    }
+
+    @Override
+    public void reset() {
+        prohibitedMoves.clear();
+        maxSizeTabouList = MAX_SIZE;
+        super.reset();
+    }
+
+    public int getMaxSizeTabouList() {
+        return maxSizeTabouList;
+    }
+
+    public void setMaxSizeTabouList(int maxSizeTabouList) {
+        this.maxSizeTabouList = maxSizeTabouList;
+    }
 
     @Override
     public List<Bin> getNextIteration(List<Bin> bins) {
-        float binsWeight = 0;
-        for (Bin bin : bins) {
-            binsWeight += bin.getWeight();
-        }
+        float binsWeight = Utils.getBinPackingWeight(bins);
 
-        AbstractNeighboursCalculator neighboursCalculator = new SwitchNeighboursCalculator();
         List<List<Bin>> neighbours = neighboursCalculator.calcNeighbours(bins);
         List<Bin> bestNeighbour = new ArrayList<Bin>();
         float bestWeight = Float.MAX_VALUE;
         for (List<Bin> neighbour : neighbours) {
-            List<Item> modifiedItems = getModifiedItems(bins, neighbour);
+            List<Integer> modifiedItemIds = getModifiedItemsId(bins, neighbour);
             // If goal bin is in prohibited bins
             boolean isProhibited = false;
-            for (Item item : modifiedItems) {
-                if (prohibitedMoves.contains(item)) {
-                    isProhibited = true;
+            for (Integer itemId : modifiedItemIds) {
+                for (Integer prohibitedItemId : prohibitedMoves) {
+                    if (itemId.equals(prohibitedItemId)) {
+                        isProhibited = true;
+                        break;
+                    }
                 }
             }
             if (!isProhibited) {
@@ -47,21 +65,20 @@ public class TabouMetaheuristic extends Metaheuristic {
         // No solution reachable with banned bins : end of algorithm
         if (bestNeighbour.isEmpty()) {
             isAlgorithmRunning = false;
-            return bins;
+            return bestSolution;
         }
 
-        System.out.println("Best weight: " + bestWeight);
         // Found better solution
         if (bestWeight < binsWeight) {
+            if (bestWeight < Utils.getBinPackingWeight(bestSolution)) {
+                bestSolution = bestNeighbour;
+            }
             return bestNeighbour;
         }
         // Found one solution but degrades the last one
         else {
-            List<Item> modifiedItems = getModifiedItems(bins, bestNeighbour);
-            for (Item item : modifiedItems) {
-                System.out.println("Banning item: " + item.getId());
-            }
-            prohibitedMoves.addAll(modifiedItems);
+            List<Integer> modifiedItemsId = getModifiedItemsId(bins, bestNeighbour);
+            prohibitedMoves.addAll(modifiedItemsId);
             while (prohibitedMoves.size() > maxSizeTabouList) {
                 prohibitedMoves.remove();
             }
@@ -69,14 +86,14 @@ public class TabouMetaheuristic extends Metaheuristic {
         }
     }
 
-    private List<Item> getModifiedItems(List<Bin> bins, List<Bin> neighbour) {
-        List<Item> modifiedItems = new ArrayList<Item>();
+    private List<Integer> getModifiedItemsId(List<Bin> bins, List<Bin> neighbour) {
+        List<Integer> modifiedItems = new ArrayList<Integer>();
         for (Bin value : bins) {
             for (Bin bin : neighbour) {
                 if (value.getId() == bin.getId()) {
-                    Item i = getModifiedItemInBin(value, bin);
-                    if (i != null) {
-                        modifiedItems.add(i);
+                    Integer id = getModifiedItemIdInBin(value, bin);
+                    if (id != null) {
+                        modifiedItems.add(id);
                     }
                 }
             }
@@ -84,10 +101,10 @@ public class TabouMetaheuristic extends Metaheuristic {
         return modifiedItems;
     }
 
-    private Item getModifiedItemInBin(Bin previousBin, Bin newBin) {
+    private Integer getModifiedItemIdInBin(Bin previousBin, Bin newBin) {
         for (Item item : previousBin.getItems().keySet()) {
-            if (!newBin.getItems().containsKey(item)) {
-                return item;
+            if (!newBin.getItemIdList().contains(item.getId())) {
+                return item.getId();
             }
         }
         return null;

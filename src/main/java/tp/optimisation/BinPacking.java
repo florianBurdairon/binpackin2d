@@ -1,8 +1,9 @@
 package tp.optimisation;
 
 
-import tp.optimisation.metaheuristics.GeneticMetaheuristic;
+import tp.optimisation.metaheuristics.HillClimbingMetaheuristic;
 import tp.optimisation.metaheuristics.Metaheuristic;
+import tp.optimisation.neighbours.SwitchNeighboursCalculator;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,7 +19,7 @@ public class BinPacking {
 
     public BinPacking(Dataset dataset) {
         this.dataset = dataset;
-        reset();
+        setMetaheuristic(new HillClimbingMetaheuristic(new SwitchNeighboursCalculator()));
     }
 
     public void setRunOnUpdate(Runnable runOnUpdate) {
@@ -29,7 +30,7 @@ public class BinPacking {
         return bins;
     }
 
-    public void FFDH() {
+    public void oneLevelFFF() {
         // Use First Fit Decreasing Height algorithm to pack items from dataset into bins
         // Sort items by decreasing width
         List<Item> items = new ArrayList<>(dataset.getItems());
@@ -91,10 +92,10 @@ public class BinPacking {
     }
 
     public void reset() {
-        this.metaheuristic = new GeneticMetaheuristic();
         // Reset the bins to their initial state
+        metaheuristic.reset();
         bins = new ArrayList<>();
-        FFDH();
+        oneLevelFFF();
     }
 
     public void getNextIteration() {

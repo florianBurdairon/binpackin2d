@@ -1,7 +1,10 @@
 package tp.optimisation;
 
+import tp.optimisation.rendering.SceneRenderer;
+
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+        SceneRenderer scene = new SceneRenderer();
+        scene.startApplication();
     }
 }

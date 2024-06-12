@@ -36,36 +36,7 @@ public class Bin implements Cloneable {
 
     private void addItemAt(Item item, Position position) {
         items.put(item, position);
-//        Guillotine g = new Guillotine(Guillotine.Direction.Vertical, position.getX() + item.width);
-//
-//        // Get the empty space where the item is placed and replace it by the new empty spaces
-//        Rectangle itemRectangle = new Rectangle(position.getX(), position.getY(), item.width, item.height);
-//        List<Rectangle> emptySpacesToRemove = new ArrayList<>();
-//        List<Rectangle> emptySpacesToAdd = new ArrayList<>();
-//        for (Rectangle r : emptySpaces) {
-//            if (Utils.isItemOverlapping(r, itemRectangle)) {
-//                emptySpacesToRemove.add(r);
-//                List<Rectangle> newRectangles = r.cutWithGuillotine(g);
-//                Rectangle rectangleWithoutItem = new Rectangle(newRectangles.get(0).getX(), newRectangles.get(0).getY() + itemRectangle.getHeight(), newRectangles.get(0).getWidth(), newRectangles.get(0).getHeight() - itemRectangle.getHeight());
-//                emptySpacesToAdd.add(rectangleWithoutItem);
-//                emptySpacesToAdd.add(newRectangles.get(1));
-//                break;
-//            }
-//        }
-//        emptySpaces.removeAll(emptySpacesToRemove);
-//        emptySpaces.addAll(emptySpacesToAdd);
-//
-//        guillotines.add(g);
     }
-
-    /*public boolean addItem(Item item) {
-        Position position = canFit(item);
-        if (position != null) {
-            addItemAt(item, position);
-            return true;
-        }
-        return false;
-    }*/
 
     // Reorganize the items in the bin each time a new item is added using FFDH algorithm
     public boolean addItem(Item item) {
@@ -119,18 +90,12 @@ public class Bin implements Cloneable {
         return itemPositions;
     }
 
+    public void removeItemById(int id) {
+        items.keySet().stream().filter(i -> i.getId() == id).findFirst().ifPresent(this::removeItem);
+    }
+
     public void removeItem(Item item) {
         items.remove(item);
-//        Bin reorganizedBin = new Bin(width, height);
-//        for (Item i : items.keySet()) {
-//            reorganizedBin.addItemAt(i, items.get(i));
-//        }
-//        items.clear();
-//        guillotines.clear();
-//        emptySpaces.clear();
-//        emptySpaces.addAll(reorganizedBin.emptySpaces);
-//        items.putAll(reorganizedBin.items);
-//        guillotines.addAll(reorganizedBin.guillotines);
     }
 
     public void addItemHorizontally(Item item) {

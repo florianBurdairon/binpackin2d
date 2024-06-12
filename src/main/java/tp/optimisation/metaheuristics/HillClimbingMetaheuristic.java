@@ -1,6 +1,7 @@
 package tp.optimisation.metaheuristics;
 
 import tp.optimisation.Bin;
+import tp.optimisation.neighbours.AbstractNeighboursCalculator;
 import tp.optimisation.neighbours.NeighboursCalculator;
 import tp.optimisation.utils.Utils;
 
@@ -8,12 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HillClimbingMetaheuristic extends Metaheuristic {
+    public HillClimbingMetaheuristic(AbstractNeighboursCalculator neighboursCalculator) {
+        super(neighboursCalculator);
+    }
+
     @Override
     public List<Bin> getNextIteration(List<Bin> bins) {
-        float binsWeight = 0;
-        for (Bin bin : bins) {
-            binsWeight += bin.getWeight();
-        }
+        float binsWeight = Utils.getBinPackingWeight(bins);
 
         NeighboursCalculator neighboursCalculator = new NeighboursCalculator();
         List<List<Bin>> neighbours = neighboursCalculator.calcNeighbours(bins);
@@ -27,9 +29,10 @@ public class HillClimbingMetaheuristic extends Metaheuristic {
             }
         }
         if (bestWeight < binsWeight) {
+            bestSolution = bestNeighbour;
             return bestNeighbour;
         }
         isAlgorithmRunning = false;
-        return bins;
+        return bestSolution;
     }
 }
