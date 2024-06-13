@@ -20,7 +20,7 @@ import javafx.stage.Stage;
 import tp.optimisation.BinPacking;
 import tp.optimisation.Dataset;
 import tp.optimisation.metaheuristics.*;
-import tp.optimisation.neighbours.SwitchNeighboursCalculator;
+import tp.optimisation.neighbours.NeighboursCalculator;
 
 public class SceneRenderer extends Application {
 
@@ -29,6 +29,8 @@ public class SceneRenderer extends Application {
     private String datasetFile;
     private BinPacking bp;
     private BinPackingRenderer bpRenderer;
+
+    private Metaheuristic metaheuristic;
 
     private Text nbBinsText;
     private Text nbIterationsText;
@@ -129,6 +131,7 @@ public class SceneRenderer extends Application {
         readDatasetButton.setOnAction(e -> {
             world.getChildren().clear();
             bp = new BinPacking(Dataset.fromFile(datasetFile));
+            bp.setMetaheuristic(metaheuristic);
             bpRenderer = new BinPackingRenderer(bp);
             bpRenderer.renderInto(world);
             bpRenderer.registerEvents(scene);
@@ -143,7 +146,7 @@ public class SceneRenderer extends Application {
 
     private Pane changeParametersPane() {
         VBox parametersPane = new VBox();
-        parametersPane.setSpacing(10);
+        parametersPane.setSpacing(20);
         parametersPane.setPadding(new Insets(10, 10, 10, 10));
         parametersPane.setAlignment(Pos.CENTER_LEFT);
 
@@ -151,17 +154,43 @@ public class SceneRenderer extends Application {
 
         RadioButton rbHill = new RadioButton("Hill Climbing");
         rbHill.setToggleGroup(radioGroup);
-        rbHill.setUserData(new HillClimbingMetaheuristic(new SwitchNeighboursCalculator()));
+        rbHill.setUserData(new HillClimbingMetaheuristic(new NeighboursCalculator()));
         rbHill.setSelected(true);
+        metaheuristic = (Metaheuristic) rbHill.getUserData();
         RadioButton rbTabou = new RadioButton("Tabou");
         rbTabou.setToggleGroup(radioGroup);
-        rbTabou.setUserData(new TabouMetaheuristic(new SwitchNeighboursCalculator()));
+        rbTabou.setUserData(new TabouMetaheuristic(new NeighboursCalculator()));
         RadioButton rbGenetic = new RadioButton("Genetic");
         rbGenetic.setToggleGroup(radioGroup);
-        rbGenetic.setUserData(new GeneticMetaheuristic(new SwitchNeighboursCalculator()));
+        rbGenetic.setUserData(new GeneticMetaheuristic(new NeighboursCalculator()));
         RadioButton rbAnneal = new RadioButton("Simulating Annealing");
         rbAnneal.setToggleGroup(radioGroup);
-        rbAnneal.setUserData(new SimulatingAnnealingMetaheuristic(new SwitchNeighboursCalculator()));
+        rbAnneal.setUserData(new SimulatingAnnealingMetaheuristic(new NeighboursCalculator()));
+
+        VBox maxIterationPane = new VBox();
+        maxIterationPane.setSpacing(5);
+        maxIterationPane.setPadding(new Insets(5, 5, 5, 5));
+        maxIterationPane.setAlignment(Pos.CENTER_RIGHT);
+        Button buttonSaveMaxIterations = new Button("Save");
+
+        HBox line = new HBox();
+        Text textLine = new Text("Max Iterations: ");
+        TextField textFieldMaxIterations = new TextField();
+        textFieldMaxIterations.setText(String.valueOf(metaheuristic.getMaxIterations()));
+
+        HBox lineE = new HBox();
+        Text textLineE = new Text("Epsilon: ");
+        TextField textFieldEpsilon = new TextField();
+        textFieldEpsilon.setText(String.valueOf(metaheuristic.getEpsilon()));
+
+        buttonSaveMaxIterations.setOnAction(actionEvent -> {
+            metaheuristic.setMaxIterations(Integer.parseInt(textFieldMaxIterations.textProperty().get()));
+            metaheuristic.setEpsilon(Double.parseDouble(textFieldEpsilon.textProperty().get()));
+        });
+        line.getChildren().addAll(textLine, textFieldMaxIterations);
+        lineE.getChildren().addAll(textLineE, textFieldEpsilon);
+        maxIterationPane.getChildren().addAll(line, lineE, buttonSaveMaxIterations);
+        parametersPane.getChildren().add(maxIterationPane);
 
         VBox paramByMetaheuristic = new VBox();
         paramByMetaheuristic.setSpacing(5);
@@ -170,10 +199,16 @@ public class SceneRenderer extends Application {
 
         radioGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
             public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
-                Metaheuristic metaheuristic = (Metaheuristic) newValue.getUserData();
+                metaheuristic = (Metaheuristic) newValue.getUserData();
+                metaheuristic.setMaxIterations(Integer.parseInt(textFieldMaxIterations.textProperty().get()));
+                metaheuristic.setEpsilon(Double.parseDouble(textFieldEpsilon.textProperty().get()));
                 metaheuristic.reset();
                 changeParameters(paramByMetaheuristic, metaheuristic);
-                bp.setMetaheuristic(metaheuristic);
+                if (bp != null) {
+                    bp.setMetaheuristic(metaheuristic);
+                } else {
+                    System.out.println("Select a dataset before doing that!");
+                }
                 updateValues();
                 bpRenderer.reset();
             }
@@ -205,7 +240,6 @@ public class SceneRenderer extends Application {
             Text textLine1 = new Text("Best Solutions: ");
             TextField textFieldLine1 = new TextField();
             textFieldLine1.setText(String.valueOf(g.getNbBestSolutions()));
-            line1.getChildren().addAll(textLine1, textFieldLine1);
             HBox line2 = new HBox();
             Text textLine2 = new Text("Mutation Rate: ");
             TextField textFieldLine2 = new TextField();
@@ -215,20 +249,33 @@ public class SceneRenderer extends Application {
                 g.setNbBestSolutions(Float.parseFloat(textFieldLine1.textProperty().getValue()));
                 g.setMutationRate(Float.parseFloat(textFieldLine2.textProperty().getValue()));
             });
+            line1.getChildren().addAll(textLine1, textFieldLine1);
             line2.getChildren().addAll(textLine2, textFieldLine2);
             box.getChildren().addAll(line1, line2);
 
         } else if (metaheuristic instanceof SimulatingAnnealingMetaheuristic s) {
             HBox line1 = new HBox();
-            Text textLine1 = new Text("Cooling Rate: ");
+            Text textLine1 = new Text("Temperature: ");
             TextField textFieldLine1 = new TextField();
-            textFieldLine1.setText(String.valueOf(s.getCoolingRate()));
+            textFieldLine1.setText(String.valueOf(s.getTemperature()));
+            HBox line2 = new HBox();
+            Text textLine2 = new Text("Cooling Rate: ");
+            TextField textFieldLine2 = new TextField();
+            textFieldLine2.setText(String.valueOf(s.getCoolingRate()));
+            HBox line3 = new HBox();
+            Text textLine3 = new Text("Iter/Temp: ");
+            TextField textFieldLine3 = new TextField();
+            textFieldLine3.setText(String.valueOf(s.getNbIterationPerTemperature()));
 
             buttonSave.setOnAction(actionEvent -> {
-                s.setCoolingRate(Float.parseFloat(textFieldLine1.textProperty().getValue()));
+                s.setTemperature(Double.parseDouble(textFieldLine1.textProperty().getValue()));
+                s.setCoolingRate(Float.parseFloat(textFieldLine2.textProperty().getValue()));
+                s.setNbIterationPerTemperature(Integer.parseInt(textFieldLine3.textProperty().get()));
             });
             line1.getChildren().addAll(textLine1, textFieldLine1);
-            box.getChildren().add(line1);
+            line2.getChildren().addAll(textLine2, textFieldLine2);
+            line3.getChildren().addAll(textLine3, textFieldLine3);
+            box.getChildren().addAll(line1, line2, line3);
         }
         box.getChildren().add(buttonSave);
     }
@@ -254,11 +301,31 @@ public class SceneRenderer extends Application {
 
         updateStatePane.getChildren().add(nextIterationButton);
 
-        Button processButton = new Button("10 iterations");
+        Button process10Button = new Button("10 iterations");
+        process10Button.setOnAction(e -> {
+            bp.process10();
+            updateValues();
+            bpRenderer.registerEvents(scene);
+        });
+        process10Button.setPrefSize(150, 30);
+
+        updateStatePane.getChildren().add(process10Button);
+
+        Button processButton = new Button("Process");
         processButton.setOnAction(e -> {
+            if (!metaheuristic.isAlgorithmRunning()) {
+                bp.reset();
+                updateValues();
+                bpRenderer.reset();
+            }
             bp.processUntilConvergence();
             updateValues();
             bpRenderer.registerEvents(scene);
+            System.out.println("Algorithm: " + metaheuristic.getClass().getName());
+            System.out.println("Dataset: " + datasetFile);
+            System.out.println("Nb bins: " + bp.getBins().size());
+            System.out.println("Nb iterations: " + bp.getNbIterations());
+            System.out.println("Process time: " + bp.getProcessTime() + "ms");
         });
         processButton.setPrefSize(150, 30);
 

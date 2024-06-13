@@ -3,7 +3,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import tp.optimisation.metaheuristics.HillClimbingMetaheuristic;
 import tp.optimisation.metaheuristics.Metaheuristic;
-import tp.optimisation.neighbours.SwitchNeighboursCalculator;
+import tp.optimisation.neighbours.NeighboursCalculator;
 
 import java.util.stream.Stream;
 
@@ -13,7 +13,7 @@ public class HeuristicTest {
     @MethodSource("testHillClimbingMetaheuristicValues")
     public void testHillClimbingMetaheuristic() {
         //TODO: Do this test
-        Metaheuristic heuristic = new HillClimbingMetaheuristic(new SwitchNeighboursCalculator());
+        Metaheuristic heuristic = new HillClimbingMetaheuristic(new NeighboursCalculator());
     }
 
     private static Stream<Arguments> testHillClimbingMetaheuristicValues() {

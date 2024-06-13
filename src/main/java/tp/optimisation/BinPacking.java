@@ -3,7 +3,7 @@ package tp.optimisation;
 
 import tp.optimisation.metaheuristics.HillClimbingMetaheuristic;
 import tp.optimisation.metaheuristics.Metaheuristic;
-import tp.optimisation.neighbours.SwitchNeighboursCalculator;
+import tp.optimisation.neighbours.NeighboursCalculator;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,11 +15,13 @@ public class BinPacking {
     private List<Bin> bins;
     private Metaheuristic metaheuristic;
 
+    private long processTime = 0;
+
     private Runnable runOnUpdate;
 
     public BinPacking(Dataset dataset) {
         this.dataset = dataset;
-        setMetaheuristic(new HillClimbingMetaheuristic(new SwitchNeighboursCalculator()));
+        setMetaheuristic(new HillClimbingMetaheuristic(new NeighboursCalculator()));
     }
 
     public void setRunOnUpdate(Runnable runOnUpdate) {
@@ -93,9 +95,14 @@ public class BinPacking {
 
     public void reset() {
         // Reset the bins to their initial state
+        processTime = 0;
         metaheuristic.reset();
         bins = new ArrayList<>();
         oneLevelFFF();
+    }
+
+    public long getProcessTime(){
+        return processTime;
     }
 
     public void getNextIteration() {
@@ -105,6 +112,15 @@ public class BinPacking {
     }
 
     public void processUntilConvergence()
+    {
+        processTime -= System.currentTimeMillis();
+        while (metaheuristic.isAlgorithmRunning()) {
+            getNextIteration();
+        }
+        processTime += System.currentTimeMillis();
+    }
+
+    public void process10()
     {
         for (int i = 0; i < 10; i++) {
             getNextIteration();

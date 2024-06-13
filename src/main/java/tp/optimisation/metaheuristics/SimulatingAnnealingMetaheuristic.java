@@ -10,9 +10,11 @@ public class SimulatingAnnealingMetaheuristic extends Metaheuristic {
 
     private final double TEMPERATURE = 10000;
     private final double COOLING_RATE = 0.01;
+    private final int NB_ITERATION_PER_TEMPERATURE = 10;
 
     private double temperature = TEMPERATURE;
     private double coolingRate = COOLING_RATE;
+    private int nbIterationPerTemperature = NB_ITERATION_PER_TEMPERATURE;
 
     public SimulatingAnnealingMetaheuristic(AbstractNeighboursCalculator neighboursCalculator) {
         super(neighboursCalculator);
@@ -22,7 +24,16 @@ public class SimulatingAnnealingMetaheuristic extends Metaheuristic {
     public void reset() {
         temperature = TEMPERATURE;
         coolingRate = COOLING_RATE;
+        nbIterationPerTemperature = NB_ITERATION_PER_TEMPERATURE;
         super.reset();
+    }
+
+    public double getTemperature() {
+        return temperature;
+    }
+
+    public void setTemperature(double temperature) {
+        this.temperature = temperature;
     }
 
     public double getCoolingRate() {
@@ -33,45 +44,47 @@ public class SimulatingAnnealingMetaheuristic extends Metaheuristic {
         this.coolingRate = coolingRate;
     }
 
+    public int getNbIterationPerTemperature() {
+        return nbIterationPerTemperature;
+    }
+
+    public void setNbIterationPerTemperature(int nbIterationPerTemperature) {
+        this.nbIterationPerTemperature = nbIterationPerTemperature;
+    }
+
     @Override
     public List<Bin> getNextIteration(List<Bin> bins) {
         List<Bin> currentSolution = bins;
         List<Bin> newSolution = bins;
 
-        // Create new neighbour solution
-        List<List<Bin>> neighbours = neighboursCalculator.calcNeighbours(bins);
+        double currentWeight = Utils.getBinPackingWeight(currentSolution);
+        double bestWeight = Utils.getBinPackingWeight(bestSolution);
 
-        boolean isNewSolutionFound = false;
-
-        while (!isNewSolutionFound) {
-            if (!neighbours.isEmpty()) {
-                newSolution = neighbours.get((int) (Math.random() * neighbours.size()));
-            }
+        for (int i = 0; i < nbIterationPerTemperature; i++) {
+            // Create new neighbour solution
+            newSolution = neighboursCalculator.randomNeighbour(currentSolution);
 
             // Get the weights of the solutions
-            double currentWeight = Utils.getBinPackingWeight(currentSolution);
             double newWeight = Utils.getBinPackingWeight(newSolution);
-            double bestWeight = Utils.getBinPackingWeight(bestSolution);
 
             // Decide if we should accept the new solution
             if (acceptanceProbability(currentWeight, newWeight, temperature) > Math.random()) {
                 currentSolution = newSolution;
                 currentWeight = newWeight;
-                isNewSolutionFound = true;
             }
 
             // Keep track of the best solution
             if (currentWeight < bestWeight) {
                 bestSolution = currentSolution;
+                bestWeight = currentWeight;
             }
+        }
 
-            // Cool down the system
-            temperature *= 1 - coolingRate;
+        // Cool down the system
+        temperature *= 1 - coolingRate;
 
-            if (temperature <= 1) {
-                isAlgorithmRunning = false;
-                break;
-            }
+        if (temperature <= 1) {
+            isAlgorithmRunning = false;
         }
 
         return currentSolution;

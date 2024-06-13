@@ -2,7 +2,7 @@ package tp.optimisation.metaheuristics;
 
 import tp.optimisation.Bin;
 import tp.optimisation.neighbours.AbstractNeighboursCalculator;
-import tp.optimisation.neighbours.SwitchNeighboursCalculator;
+import tp.optimisation.neighbours.NeighboursCalculator;
 import tp.optimisation.utils.Utils;
 
 import java.util.ArrayList;
@@ -50,7 +50,7 @@ public class GeneticMetaheuristic extends Metaheuristic {
     public List<Bin> getNextIteration(List<Bin> bins) {
         // Create x random solutions (if no population)
         if (population.isEmpty()) {
-            neighboursCalculator = new SwitchNeighboursCalculator();
+            neighboursCalculator = new NeighboursCalculator();
             population = neighboursCalculator.calcNeighbours(bins);
         }
 
@@ -71,14 +71,17 @@ public class GeneticMetaheuristic extends Metaheuristic {
         population.clear();
         for (List<Bin> solution : newPopulation) {
             if (random.nextFloat() < mutationRate) {
-                List<List<Bin>> newSolution = neighboursCalculator.calcNeighbours(solution);
-                population.add(newSolution.stream().max(Comparator.comparing(Utils::getBinPackingWeight)).orElse(solution));
+                population.add(neighboursCalculator.randomNeighbour(solution));
             } else {
                 population.add(solution);
             }
         }
 
-        // Return best solution but keep others in memory
-        return population.stream().max(Comparator.comparing(Utils::getBinPackingWeight)).orElse(bins);
+        // Return best current solution but keep others in memory
+        List<Bin> solution = population.stream().max(Comparator.comparing(Utils::getBinPackingWeight)).orElse(bins);
+        if (Utils.getBinPackingWeight(solution) < Utils.getBinPackingWeight(bestSolution)) {
+            bestSolution = solution;
+        }
+        return solution;
     }
 }
