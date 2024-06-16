@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Random;
 
 public class GeneticMetaheuristic extends Metaheuristic {
-    private final float MUTATION_RATE = 0.5f;
+    private final float MUTATION_RATE = 0.2f;
 
-    private Random random = new Random();
+    private final Random random = new Random();
     private float nbBestSolutions = 5.0f;
     private float mutationRate = MUTATION_RATE;
 

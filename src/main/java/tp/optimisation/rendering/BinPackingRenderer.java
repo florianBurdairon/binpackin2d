@@ -21,7 +21,7 @@ public class BinPackingRenderer extends ObjectRenderer {
         int nbBins = binPacking.getBins().size();
         width = binPacking.getBins().getFirst().getWidth() * 1.2;
         scaleFactor = (500.0 / nbBins) / width;
-        farLeft = (int) ((- nbBins / 2) * (width) * scaleFactor);
+        farLeft = (int) (( -nbBins / 2.0) * (width) * scaleFactor);
         renderBins();
     }
 

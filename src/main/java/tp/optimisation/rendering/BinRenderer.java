@@ -19,8 +19,8 @@ public class BinRenderer extends ObjectRenderer {
     private final Position position;
     private final double scaleFactor;
 
-    private XForm emptySpacesRenderer = new XForm();
-    private XForm guillotinesRenderer = new XForm();
+    private final XForm emptySpacesRenderer = new XForm();
+    private final XForm guillotinesRenderer = new XForm();
 
     public BinRenderer(Bin bin, Position position, double scaleFactor) {
         this.bin = bin;

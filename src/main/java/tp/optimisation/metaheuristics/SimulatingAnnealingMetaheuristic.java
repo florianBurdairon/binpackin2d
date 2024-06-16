@@ -55,7 +55,7 @@ public class SimulatingAnnealingMetaheuristic extends Metaheuristic {
     @Override
     public List<Bin> getNextIteration(List<Bin> bins) {
         List<Bin> currentSolution = bins;
-        List<Bin> newSolution = bins;
+        List<Bin> newSolution;
 
         double currentWeight = Utils.getBinPackingWeight(currentSolution);
         double bestWeight = Utils.getBinPackingWeight(bestSolution);

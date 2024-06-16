@@ -1,6 +1,5 @@
 package tp.optimisation;
 
-import tp.optimisation.utils.Guillotine;
 import tp.optimisation.utils.Position;
 
 import java.util.*;
@@ -13,13 +12,11 @@ public class Bin implements Cloneable {
     private static int nextId = 0;
 
     private Map<Item, Position> items;
-    private ArrayList<Guillotine> guillotines;
 
     public Bin(int width, int height) {
         this.width = width;
         this.height = height;
         this.items = new HashMap<>();
-        this.guillotines = new ArrayList<>();
         this.id = nextId++;
     }
 
@@ -27,7 +24,6 @@ public class Bin implements Cloneable {
         this.width = width;
         this.height = height;
         this.items = new HashMap<>();
-        this.guillotines = new ArrayList<>();
         this.id = nextId++;
         for (Item item : items) {
             addItem(item);
@@ -130,20 +126,11 @@ public class Bin implements Cloneable {
         return items;
     }
 
-    public int getItemsCount() {
-        return items.size();
-    }
-
-    public List<Guillotine> getGuillotines() {
-        return guillotines;
-    }
-
     @Override
     public Bin clone() {
         try {
             Bin clone = (Bin) super.clone();
             clone.items = (Map<Item, Position>) ((HashMap<Item, Position>)items).clone();
-            clone.guillotines = (ArrayList<Guillotine>) guillotines.clone();
             return clone;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();

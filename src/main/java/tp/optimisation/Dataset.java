@@ -81,9 +81,7 @@ public class Dataset {
         String fileString = "";
         try {
             fileString = new String(Files.readAllBytes(Paths.get(filePath)));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException ignored) {}
         return fromString(fileString);
     }
 

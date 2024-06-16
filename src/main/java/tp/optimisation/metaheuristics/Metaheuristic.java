@@ -34,6 +34,10 @@ public abstract class Metaheuristic {
             bestSolution = bins;
         }
         List<Bin> newSolution = getNextIteration(bins);
+        if (!isAlgorithmRunning) {
+            System.out.println("Algorithm finished : Impossible to find better solution");
+            return bestSolution;
+        }
         if (Math.abs(Utils.getBinPackingWeight(newSolution) - lastSolutionWeight) < epsilon) {
             isAlgorithmRunning = false;
             System.out.println("Algorithm finished : Not enough change in score");
@@ -44,14 +48,10 @@ public abstract class Metaheuristic {
             System.out.println("Algorithm finished : Reach iterations amount limit");
             return bestSolution;
         }
-        if (isAlgorithmRunning) {
-            addOneIteration();
-            lastSolutionWeight = Utils.getBinPackingWeight(newSolution);
-            return newSolution;
-        } else {
-            System.out.println("Algorithm finished : Impossible to find better solution");
-            return bestSolution;
-        }
+        // Still has to continue
+        addOneIteration();
+        lastSolutionWeight = Utils.getBinPackingWeight(newSolution);
+        return newSolution;
     }
 
     public abstract List<Bin> getNextIteration(List<Bin> bins);

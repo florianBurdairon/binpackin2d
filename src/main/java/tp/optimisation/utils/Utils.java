@@ -36,10 +36,7 @@ public class Utils {
         if (lowestItem.getX() < highestItem.getX() && lowestItem.getX() + lowestItem.getWidth() > highestItem.getX()) {
             return true;
         }
-        if (lowestItem.getX() < highestItem.getX() + highestItem.getWidth() && lowestItem.getX() + lowestItem.getWidth() > highestItem.getX() + highestItem.getWidth()) {
-            return true;
-        }
-        return false;
+        return lowestItem.getX() < highestItem.getX() + highestItem.getWidth() && lowestItem.getX() + lowestItem.getWidth() > highestItem.getX() + highestItem.getWidth();
     }
 
     public static float getBinPackingWeight(List<Bin> bins) {

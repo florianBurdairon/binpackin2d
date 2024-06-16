@@ -17,7 +17,7 @@ public class HillClimbingMetaheuristic extends Metaheuristic {
         float binsWeight = Utils.getBinPackingWeight(bins);
 
         List<List<Bin>> neighbours = neighboursCalculator.calcNeighbours(bins);
-        List<Bin> bestNeighbour = new ArrayList<Bin>();
+        List<Bin> bestNeighbour = new ArrayList<>();
         float bestWeight = binsWeight;
         for (List<Bin> neighbour : neighbours) {
             float neighbourWeight = Utils.getBinPackingWeight(neighbour);

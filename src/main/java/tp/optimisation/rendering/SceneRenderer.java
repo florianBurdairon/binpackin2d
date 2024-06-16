@@ -1,8 +1,6 @@
 package tp.optimisation.rendering;
 
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -197,21 +195,19 @@ public class SceneRenderer extends Application {
         paramByMetaheuristic.setPadding(new Insets(5, 5, 5, 5));
         paramByMetaheuristic.setAlignment(Pos.CENTER_RIGHT);
 
-        radioGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
-            public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
-                metaheuristic = (Metaheuristic) newValue.getUserData();
-                metaheuristic.setMaxIterations(Integer.parseInt(textFieldMaxIterations.textProperty().get()));
-                metaheuristic.setEpsilon(Double.parseDouble(textFieldEpsilon.textProperty().get()));
-                metaheuristic.reset();
-                changeParameters(paramByMetaheuristic, metaheuristic);
-                if (bp != null) {
-                    bp.setMetaheuristic(metaheuristic);
-                } else {
-                    System.out.println("Select a dataset before doing that!");
-                }
-                updateValues();
-                bpRenderer.reset();
+        radioGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            metaheuristic = (Metaheuristic) newValue.getUserData();
+            metaheuristic.setMaxIterations(Integer.parseInt(textFieldMaxIterations.textProperty().get()));
+            metaheuristic.setEpsilon(Double.parseDouble(textFieldEpsilon.textProperty().get()));
+            metaheuristic.reset();
+            changeParameters(paramByMetaheuristic, metaheuristic);
+            if (bp != null) {
+                bp.setMetaheuristic(metaheuristic);
+            } else {
+                System.out.println("Select a dataset before doing that!");
             }
+            updateValues();
+            bpRenderer.reset();
         });
 
         parametersPane.getChildren().addAll(rbHill, rbTabou, rbGenetic, rbAnneal);
@@ -230,9 +226,7 @@ public class SceneRenderer extends Application {
             TextField textFieldLine1 = new TextField();
             textFieldLine1.setText(String.valueOf(t.getMaxSizeTabouList()));
 
-            buttonSave.setOnAction(actionEvent -> {
-                t.setMaxSizeTabouList(Integer.parseInt(textFieldLine1.textProperty().getValue()));
-            });
+            buttonSave.setOnAction(actionEvent -> t.setMaxSizeTabouList(Integer.parseInt(textFieldLine1.textProperty().getValue())));
             line1.getChildren().addAll(textLine1, textFieldLine1);
             box.getChildren().add(line1);
         } else if (metaheuristic instanceof GeneticMetaheuristic g) {
